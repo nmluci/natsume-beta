@@ -1,3 +1,4 @@
+from typing import Optional
 import colorama
 import sys
 import os
@@ -52,19 +53,21 @@ class NatsumeUtils:
     def argsParser(self):
         arg = argparse.ArgumentParser(
             prog="cxtools",
-            usage='%(prog)s [option]'
+            exit_on_error=False
         )
         
         subParser = arg.add_subparsers(dest='submodule')
+        helpParse = subParser.add_parser('help', help='show help menu')
         
-        # Mostly Done
+        # Done
         redditParse = subParser.add_parser("reddit", help='Reddit submodule')
         redditParse.add_argument('subreddit', type=str, help="subreddit name")
-        redditParse.add_argument('-n', type = int, help='Number of Posts', default=25)
+        redditParse.add_argument('-n', type=int, help='number of posts', default=25)
+        redditParse.add_argument('-i', help='inclusive download', action="store_true")
 
         # Barely
         nhentaiParse = subParser.add_parser("nhentai", help='nHentai submodule')
-        nhentaiParse.add_argument('sauce', type=int, help='Get Info about the sauce', nargs="*")
+        nhentaiParse.add_argument('sauce', type=int, help='get info about the sauce', nargs="*")
         
         # Should be Sufficient
         imgurParse = subParser.add_parser("imgur", help='Imgur submodule')
@@ -73,9 +76,8 @@ class NatsumeUtils:
         # Barely
         pornhubParse = subParser.add_parser("ph", help='PH submodule')
         pornhubParse.add_argument("url", type=str, help="PH URL", nargs="*")
-        args = arg.parse_args()
         
-        return args
+        return arg.parse_args()
 
     def helpInfo(self, cmd=None):
         if cmd is None:
