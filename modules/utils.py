@@ -1,4 +1,3 @@
-from typing import Optional
 import colorama
 import sys
 import os
@@ -21,9 +20,9 @@ class NatsumeUtils:
         signal.signal(signal.SIGTERM, self.graceExit)
 
     def graceExit(self, sigterm=None, frame=None):
-        self.printInfo("Exiting...")
+        self.printInfo("\nExiting...")
         self.isExiting = not self.isExiting
-        if self.isExiting: exit()
+        exit()
 
     def getOpt(self, opt: list):
         self.printInfo('Module to Choose', ", ".join(opt))
@@ -52,8 +51,7 @@ class NatsumeUtils:
 
     def argsParser(self):
         arg = argparse.ArgumentParser(
-            prog="cxtools",
-            exit_on_error=False
+            prog="cxtools"
         )
         
         subParser = arg.add_subparsers(dest='submodule')
@@ -67,6 +65,7 @@ class NatsumeUtils:
 
         # Barely
         nhentaiParse = subParser.add_parser("nhentai", help='nHentai submodule')
+        nhentaiParse.add_argument('-dl', help='download this sauce', action='store_true')
         nhentaiParse.add_argument('sauce', type=int, help='get info about the sauce', nargs="*")
         
         # Should be Sufficient
