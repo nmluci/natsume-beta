@@ -1,35 +1,21 @@
-from imgur_python import Imgur
+from structure import baseModule
 from . import download as natsumeDownload
-from . import utils as natsumeUtils
+from imgur_python import Imgur
 import os
 import sys
 import json
 
-class NatsumeImgur:
+class NatsumeImgur(baseModule.BaseModule):
     def __init__(self):
+        super().__init__()
         self.dlman = natsumeDownload.NatsumeDownload()
-        self.utils = natsumeUtils.NatsumeUtils()
-
-        self.CRED = self.utils.CRED
-        self.CCYAN = self.utils.CCYAN
-        self.CXMAGENTA = self.utils.CXMAGENTA
-        self.CMAGENTA = self.utils.CMAGENTA
-        self.CRESET = self.utils.CRESET
-
-        self.imgur = list()
-        with open("././config.fyn") as f:
-            data = json.load(f)
-            self.imgur.append(data['Imgur']['clientID'])
-
+        
     def parser(self, url, title=None, src=None):
         if src == None: self.utils.printError("Invalid Source!")
         imgurClient = Imgur({'client_id': self.imgur[0]})
 
-        if src == 'imgur':
-            filename = os.path.join(src, url.split('/')[len(url.split('/'))-1])
-        else:
-            filename = os.path.join(src, url.split('/')[len(url.split('/'))-1])
-
+        filename = os.path.join(url.split('/')[len(url.split('/'))-1])
+        
         try:
             if "/a/" in url:
                 albumId = url.split('/')[len(url.split('/'))-1]

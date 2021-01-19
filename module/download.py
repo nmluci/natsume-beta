@@ -1,5 +1,4 @@
-from re import template
-from . import utils as natsumeUtils
+from structure import baseModule
 import os
 import sys
 import time
@@ -7,16 +6,9 @@ import traceback
 import requests
 import signal
 
-class NatsumeDownload:
+class NatsumeDownload(baseModule.BaseModule):
     def __init__(self):
-        self.utils = natsumeUtils.NatsumeUtils()
-        
-        self.CRED = self.utils.CRED
-        self.CCYAN = self.utils.CCYAN
-        self.CXMAGENTA = self.utils.CXMAGENTA
-        self.CMAGENTA = self.utils.CMAGENTA
-        self.CRESET = self.utils.CRESET
-
+        super().__init__()
         self.session = requests.Session()
         self.downloadFolder = 'Download'
         self.state = True
@@ -35,11 +27,11 @@ class NatsumeDownload:
             for url in data['response']['data']:
                 url = url['link']
                 # filename = os.path.join(title, url.split("/")[len(url.split("/"))-1])
-                self.dlman.bulkDownloader(url, title, src='imgur')
+                self.bulkDownloader(url, title, src='imgur')
 
         if type == 'nhentai':
             title = str(title)
-            self.dlman.bulkDownloader(data, title, src='nhentai')
+            self.bulkDownloader(data, title, src='nhentai')
 
     def bulkDownloader(self, data: list, title=None, src=None):
         progress = 0
@@ -55,6 +47,7 @@ class NatsumeDownload:
                 response = self.session.head(url)
                 if response.status_code == 200:
                     fSize = int(response.headers.get("Content-Length"))
+                    if fSize == None: fSize = 1
                     response = self.session.get(url, stream=True)
                     filename = os.path.join(title, url.split("/")[len(url.split("/"))-1])
 
@@ -100,7 +93,11 @@ class NatsumeDownload:
             
             response = self.session.head(url)
             if response.status_code == 200:
-                fSize = int(response.headers.get("Content-Length"))
+                try:
+                    fSize = int(response.headers.get("Content-Length")) if int(response.headers.get("Content-Length")) > 0 else 1
+                except Exception as e:
+                    fSize = 1
+                    self.utils.printError("[DL] {} {}".format(e, fSize))
                 response = self.session.get(url, stream=True)
 
                 dlPath = os.path.join(baseFolder, src, filename)
@@ -127,7 +124,7 @@ class NatsumeDownload:
                     ))
                     if (ignore): return True
         except Exception as e:
-            self.utils.printError(e)
+            self.utils.printError("Skipping Files")
 
 
                     
