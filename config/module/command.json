@@ -1,0 +1,8 @@
+[
+    {
+        "name": "admin",
+        "command": "admin",
+        "desc": "Shows info"
+    }
+]
+    

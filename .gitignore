@@ -1,2 +1,7 @@
 Download/*
 __pycache__/*
+*.code-workspace
+test.py
+alpha/*
+*/__pycache__
+.gitignore
