@@ -1,0 +1,29 @@
+[
+    {
+       "CommandGroup": "admin" 
+    },
+    {
+       "commandName": "reload",
+       "desc": "reload module"
+    },
+    {
+       "commandName": "load",
+       "desc": "load module"
+    },
+    {
+       "commandName": "reloadAll",
+       "desc": "reload All modules"
+    },
+    {
+       "commandName": "save",
+       "desc": "save module"
+    },
+    {
+       "commandName": "help",
+       "desc": "Fuck Yourself"
+    },
+    {
+       "commandName": "exit",
+       "desc": "exit..."
+    }
+ ]

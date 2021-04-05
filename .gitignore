@@ -1,5 +1,6 @@
 Download/*
-__pycache__/*
+__pycache__/
+*.py[cod]
 *.code-workspace
 test.py
 alpha/*
