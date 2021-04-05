@@ -8,32 +8,20 @@ class NatsumeApp:
         self.currMod = dict()
         self.currCmd = ""
         self.Utils = utils.NatsumeUtils()
-        self.ExtLoader = extensions.NatsumeExtMan(["admin"])
-        # self.ExtLoader = extensions.NatsumeExtMan()
+        self.ExtLoader = extensions.NatsumeExtMan(self, ["admin", "reddit", "misc"])
+        self.settings = {
+            "persona": "slut"
+        }
         self.currMod = self.ExtLoader.loadAll()
-
+        self.currMod['salute'].execute("startup")
+        
     def argParser(self, args: str):
-
+        if args == "": return self.Utils.printError("app", "What's your command?")
         args = re.findall("(?:\".*?[^\\\\]\"|\S)+", args)
         if args[0] in self.currMod:
-            self.currMod[args[0]].execute(self, args[1:])
+            self.currMod[args[0]].execute(args[1:])
         else:
             self.Utils.printError("app", "{} not found!".format(args[0] if len(args) >= 1 else "Command"))
-        # if len(args.split(" ")) >= 2 and args.split(" ")[0] in self.currMod:
-        #     parsed = args.split("\"")
-        #     temp = []
-        #     print(parsed)
-            
-        #     for cmd in parsed:
-        #         if ("" in cmd.split(" ")): 
-        #             temp.append(cmd.split(" ")[0])
-        #         else:
-        #             temp.append(cmd)
-        #     print(temp)
-        # elif args in self.currMod:
-        #         self.currMod[args].execute(self)
-        # else:
-        #     self.Utils.printError("app", "{} not found!".format(args if len(args) >= 1 else "Command"))
 
     def main(self):
         isExit = False
