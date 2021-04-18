@@ -55,7 +55,7 @@ class NatsumeExt:
         self.__VER = 1.0
         self.base = main
         self.utils = utils.NatsumeUtils()
-        self.name = "NatsumeDefault"
+        self.name = "Natsume Base Extension"
         self.args = dict()
         self.help = "Wha! Nothing to see here!"
         self.desc = self.help

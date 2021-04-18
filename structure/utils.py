@@ -1,4 +1,4 @@
-import os, signal
+import os, signal, json
 from colorama import init, Fore
 
 class NatsumeUtils:
@@ -19,5 +19,13 @@ class NatsumeUtils:
         print("Exiting...")
         exit()
     
+    def getConfig(self, submodule=None) -> dict:
+        with open("profile.json", "r+") as cfg:
+            config = json.load(cfg)
+        return config
+    
+    def reloadConfig(self) -> dict:
+        pass
+
     def printError(self, mod, err):
         print("{}[{}] {}{}".format(self.RED, mod, err, self.CLR))

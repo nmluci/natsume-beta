@@ -7,3 +7,6 @@ alpha/*
 *.pyc
 .gitignore
 old_repo
+cache/*
+*.json
+*.txt

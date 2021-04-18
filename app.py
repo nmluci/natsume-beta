@@ -1,6 +1,6 @@
-from os import pardir
 from structure import utils, extensions
 import re
+
 class NatsumeApp:
     def __init__(self):
         self.__VER = 0.3
@@ -8,10 +8,8 @@ class NatsumeApp:
         self.currMod = dict()
         self.currCmd = ""
         self.Utils = utils.NatsumeUtils()
-        self.ExtLoader = extensions.NatsumeExtMan(self, ["admin", "reddit", "misc"])
-        self.settings = {
-            "persona": "slut"
-        }
+        self.ExtLoader = extensions.NatsumeExtMan(self, ["admin", "reddit", "misc", "nhentai"])
+        self.settings = self.Utils.getConfig()
         self.currMod = self.ExtLoader.loadAll()
         self.currMod['salute'].execute("startup")
         
