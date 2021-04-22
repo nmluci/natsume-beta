@@ -11,10 +11,16 @@ class NatsumePersonaGreets(extensions.NatsumeExt):
             args = args[0]
         else:
             return -1
-        
-        if args in self.base.currMod["persona"].currPersona:
-            sys.stdout.write("{}{}{}\n".format(
+        if "list" == args:
+            ctr = 1
+            sys.stdout.write("{}Available Salutes: {}\n".format(self.utils.BLUE, self.utils.CLR))
+            for persona in self.base.currMod["persona"].currPersona.keys():
+                sys.stdout.write("{}[{}] {} {}\n".format(self.utils.XRED, ctr, persona, self.utils.CLR))
+                ctr += 1
+        elif args in self.base.currMod["persona"].currPersona:
+            sys.stdout.write("{}[{}] {}{}\n".format(
                     self.utils.XRED, 
+                    "Natsume",
                     self.base.currMod["persona"].currPersona[args],
                     self.utils.CLR
                     ))

@@ -21,7 +21,7 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
             with open(os.path.join(self.personaDir, persona), "r+") as f:
                 self.personas[persona.split(".")[0]] = json.load(f)
 
-        self.currPersona = self.personas[self.base.settings["persona"]]
+        self.currPersona = self.personas[self.base.settings["natsume"]["persona"]]
 
     def execute(self, args):
         if args and args[0] in self.personas:

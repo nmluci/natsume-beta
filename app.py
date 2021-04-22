@@ -8,8 +8,8 @@ class NatsumeApp:
         self.currMod = dict()
         self.currCmd = ""
         self.Utils = utils.NatsumeUtils()
-        self.ExtLoader = extensions.NatsumeExtMan(self, ["admin", "reddit", "misc", "nhentai"])
         self.settings = self.Utils.getConfig()
+        self.ExtLoader = extensions.NatsumeExtMan(self, self.settings["natsume"]["extensions"])
         self.currMod = self.ExtLoader.loadAll()
         self.currMod['salute'].execute("startup")
         

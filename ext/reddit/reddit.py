@@ -1,3 +1,4 @@
+from inspect import indentsize
 from structure import extensions
 import praw
 import json, os, sys
@@ -16,26 +17,33 @@ class NatsumeRedditAPI(extensions.NatsumeExt):
             "limit": "Limits"
         }
         self.redditClient = praw.Reddit(user_agent="nmrika",
-                            client_id=self.cred["clientID"], client_secret=self.cred["clientSecret"],
-                            username=self.cred["username"], password=self.cred["password"]
+                            client_id=self.cred["clientID"], client_secret=self.cred["clientSecret"]
                             )
         self.cache = dict(list())
 
     def execute(self, args):
+        if len(args) == 0: 
+            self.utils.printError("reddit", "no args!")
+            return -1
         ctr = 0
-        # for post in self.redditClient.subreddit(args[0]).new(limit=None):
-        #     with open(os.path.join("cache", "{}.txt".format(post.subreddit)), "a+b") as f:
-        #         f.write("[{}] {}\n".format(post.subreddit, post.title).encode("UTF-8"))
-        for post in self.redditClient.subreddit(args[0]).new(limit=9999):
+        
+        file = open("fua.json", "w+")
+        if os.stat("Fua.json").st_size != 0: 
+            print(os.stat("Fua.json").st_size)
+            self.cache = json.load(file)
+            print(json.dumps(self.cache, indent=4))
+        
+        for post in self.redditClient.subreddit(args[0]).new(limit=10):
             if (str(post.subreddit) not in self.cache.keys()):
-                self.cache[str(post.subreddit)] =  dict()
+                sys.stdout.write("[{}] Adding to entries {}\n".format(ctr, post.title))
+                self.cache[str(post.subreddit)] = dict()
 
-            self.cache[str(post.subreddit)][str(post)] =  {
-                    "title": post.title,
-                    "url": post.url
+            self.cache[str(post.subreddit)][str(post)] = {
+                "title": post.title,
+                "url": post.url
             }
             ctr+=1
-            sys.stdout.write("Currently processed {} ehm...\r".format(ctr))
-        print("...Done!")
-        with open("Kyaan.json", "w+") as f:
-            json.dump(self.cache, f, indent=3)
+        
+        json.dump(self.cache, file, indent=3)
+        print(json.dumps(self.cache, indent=3))
+        file.close()

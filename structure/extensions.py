@@ -28,10 +28,34 @@ class NatsumeExtMan:
         newName = inspect.getmembers(newModule, inspect.isclass)[0][0]
         self.base.currMod[ext] = getattr(newModule, newName)(self.base)
 
-    def loadAll(self):
+    def reloadAll(self, extList: dict):
+        self.__loadedExt = 0
+        
+        for mod in extList:
+            for submodule in os.listdir(os.path.join(self.__extFolder, mod)):
+                if ("__" in submodule) or (".py" not in submodule): continue
+                submodule = submodule.split(".")[0]
+                fullModule = "{}.{}.{}".format(self.__extFolder, mod, submodule)
+                
+                if submodule in self.base.currMod:
+                    newModule = importlib.reload(self.__moduleMap[submodule])
+                    newName = inspect.getmembers(newModule, inspect.isclass)[0][0]
+                    self.base.currMod[submodule] = getattr(newModule, newName)(self.base)
+                else:
+                    self.__moduleMap[submodule] = importlib.import_module(fullModule, "{}.{}".format(self.__extFolder, mod))
+                    moduleName = inspect.getmembers(self.__moduleMap[submodule], inspect.isclass)[0][0]
+                    self.base.currMod[submodule] = getattr(self.__moduleMap[submodule], moduleName)(self.base)
+
+                if fullModule in sys.modules:
+                    self.__loadedExt += 1
+                else:
+                    self.utils.printError("ExtLoader", "{} Module Failed To Load!".format(fullModule))
+                self.__extList[submodule] = self.__moduleMap[submodule]
+
+    def loadAll(self) -> dict:
         if self.__loadedExt != 0:
-            self.printError("ExtLoader", "Modules Is Already Loaded!")
-            exit()
+            self.utils.printError("ExtLoader", "Modules Is Already Loaded!")
+            return -1
 
         extRef = dict()
         for module in self.__moduleList:
