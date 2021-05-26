@@ -1,7 +1,7 @@
-# Natsume-chan
+# Natsume-chan (beta)
 
 ### tbh idk what to write here since its still mostly backbone stuffs.
-
+### Was made as a prove of concept, and now continued on .NET 
 ## Ongoing Stuffs
 - Reddit Integration
 
