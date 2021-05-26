@@ -13,6 +13,7 @@
 ## Things Perhaps Needed Beforehand
 - Reddit Lib
 - nHentai Lib
+- Discord Lib
 
 ## Functionalities
 - Help Function

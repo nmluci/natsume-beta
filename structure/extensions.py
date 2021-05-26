@@ -1,5 +1,6 @@
 import importlib, os, sys, inspect
 from . import utils as utils
+import traceback
 
 class NatsumeExtMan:
     def __init__(self, main, moduleList: list = []):
@@ -58,21 +59,27 @@ class NatsumeExtMan:
             return -1
 
         extRef = dict()
-        for module in self.__moduleList:
-            for submodule in os.listdir(os.path.join(self.__extFolder, module)):
-                if ("__" in submodule) or (".py" not in submodule): continue
-                submodule = submodule.split(".")[0]
-                fullModule = "{}.{}.{}".format(self.__extFolder, module, submodule)
-                self.__moduleMap[submodule] = importlib.import_module(fullModule, "{}.{}".format(self.__extFolder, module))
-                moduleName = inspect.getmembers(self.__moduleMap[submodule], inspect.isclass)[0][0]
-                extRef[submodule] = getattr(self.__moduleMap[submodule], moduleName)(self.base)
+        try:
+            for module in self.__moduleList:
+                for submodule in os.listdir(os.path.join(self.__extFolder, module)):
+                    if ("__" in submodule) or (".py" not in submodule): continue
+                    submodule = submodule.split(".")[0]
+                    fullModule = "{}.{}.{}".format(self.__extFolder, module, submodule)
+                    self.__moduleMap[submodule] = importlib.import_module(fullModule, "{}.{}".format(self.__extFolder, module))
+                    moduleName = inspect.getmembers(self.__moduleMap[submodule], inspect.isclass)[0][0]
+                    extRef[submodule] = getattr(self.__moduleMap[submodule], moduleName)(self.base)
+                    
+                    if fullModule in sys.modules:
+                        self.__loadedExt += 1
+                    else:
+                        self.printError("ExtLoader", "{} Module Failed To Load!".format(fullModule))
+                    self.__extList[submodule] = self.__moduleMap[submodule]
 
-                if fullModule in sys.modules:
-                    self.__loadedExt += 1
-                else:
-                    self.printError("ExtLoader", "{} Module Failed To Load!".format(fullModule))
-                self.__extList[submodule] = self.__moduleMap[submodule]
-        return extRef
+        except Exception as e:
+            self.utils.printError("ExtMan", e)
+            traceback.print_exc()
+        finally:
+            return extRef
 
 class NatsumeExt:
     def __init__(self, main):

@@ -16,6 +16,8 @@ class NatsumeExtReload(extensions.NatsumeExt):
                 self.utils.printError("Reload", e)
             else:
                 print("Ext. {} Reloaded!".format(args[0]))
+        elif "all" == args[0].lower():
+            self.base.ExtLoader.reloadAll(self.base.settings["natsume"]["extensions"])
         elif "config" == args[0].lower():
             self.base.settings = self.utils.getConfig()
             self.base.ExtLoader.reloadAll(self.base.settings["natsume"]["extensions"])

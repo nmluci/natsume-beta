@@ -3,7 +3,7 @@ import sys
 class NatsumePersonaGreets(extensions.NatsumeExt):
     def __init__(self, main):
         super().__init__(main)
-        self.name = "greet"
+        self.name = "salute"
         self.isSystem = True
 
     def execute(self, args):

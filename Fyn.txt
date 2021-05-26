@@ -1,4 +1,0 @@
-{
-    "message": "Too Many Requests",
-    "error": 429
-}

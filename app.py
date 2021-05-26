@@ -20,7 +20,7 @@ class NatsumeApp:
             self.currMod[args[0]].execute(args[1:])
         else:
             self.Utils.printError("app", "{} not found!".format(args[0] if len(args) >= 1 else "Command"))
-
+        
     def main(self):
         isExit = False
         while (not isExit):
