@@ -17,8 +17,8 @@ class NatsumeRedditDownloader(redditAPI.NatsumeRedditAPI):
             self.utils.printError("Reddit Downloader", "Sum Not Specified!")
             args.append(15)
         try:
-           urls = self.getPosts(args[0], args[1])
-           for url in urls:
-               print(url) 
+           urls = self.getPosts(args[0], int(args[1]))
+        #    for url in urls:
+        #        print(url) 
         except Exception as e:
             self.utils.printError("Reddit Downloader", e)
