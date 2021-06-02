@@ -1,4 +1,4 @@
-<img src="./docs/NatsumeBanner.png"/>
+<img src="./docs/banner.png"/>
 
 ## Ongoing Stuffs
 - Reddit Integration
