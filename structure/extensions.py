@@ -13,6 +13,7 @@ class NatsumeExtMan:
         self.__extList = dict()
         self.base = main
 
+
     def getCurrentModules(self):
         print(self.__extList)
         if self.__loadedExt == 0:
@@ -91,6 +92,6 @@ class NatsumeExt:
         self.help = "Wha! Nothing to see here!"
         self.desc = self.help
         self.isSystem = False
-
+        
     def execute(self, args):
         print("Whoa, Unimplemented Feature! Nice nice... now.. GET BACK TO WORK!")

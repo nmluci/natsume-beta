@@ -2,13 +2,8 @@ from structure import extensions
 import praw
 import json, os, sys
 
-class NatsumeRedditAPI(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
-        self.name = "redditman"
-        self.desc = "Master's own implementations of Reddit API using Reddit's own public API"
-        self.help = "Wha! Nothing to see here!"
-        self.isSystem = True
+class NatsumeRedditAPI:
+    def __init__(self):
         self.cred = self.base.settings["reddit"]
         self.args = {
             "subreddit": "subreddit, if plural, considers joining it with \"+\" ",
@@ -50,21 +45,18 @@ class NatsumeRedditAPI(extensions.NatsumeExt):
 
     def getPosts(self, subreddit, num) -> dict:
         self.getSubredditData(subreddit, num)
+        subreddit = self.getSubredditName(subreddit)
         if not self.cache[str(subreddit)]:
             self.utils.printError("redditAPI", "Subreddit not yet indexed")
         else:
-            data = dict()
-            data["subreddit"] = self.getSubredditName
             try:
                 links = list()
-                for post in self.cache[data["subreddit"]]:
-                    temp = self.cache[data["subreddit"]][post]
+                for post in self.cache[subreddit]:
+                    temp = self.cache[subreddit][post]
                     links.append(temp["url"])
             except Exception:
-                pass
-
-            data["urls"] = links
-            return data
+                self.utils.printError("reddit", "Failed to fetch posts")
+            return links
 
     def getSubredditName(self, name) -> str:
         for names in self.cache:

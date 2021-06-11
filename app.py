@@ -12,7 +12,7 @@ class NatsumeApp:
         self.ExtLoader = extensions.NatsumeExtMan(self, self.settings["natsume"]["extensions"])
         self.currMod = self.ExtLoader.loadAll()
         self.currMod['salute'].execute("startup")
-        
+
     def argParser(self, args: str):
         if args == "": return self.Utils.printError("app", "What's your command?")
         args = re.findall("(?:\".*?[^\\\\]\"|\S)+", args)

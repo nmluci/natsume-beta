@@ -13,7 +13,7 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
         self.isSystem = True
         self.personas = dict()
         self.currPersona = dict()
-        self.personaDir = os.path.join("ext", "admin", "personalities")
+        self.personaDir = os.path.join("ext", "core", "personalities")
         self.init()
 
     def init(self):

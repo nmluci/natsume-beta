@@ -10,3 +10,4 @@ old_repo
 cache/*
 *.json
 *.txt
+*Tmp/
