@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-import os, sys, requests, json, re, datetime
+import os, sys, requests, json, re
+from datetime import timezone, datetime
 from bs4 import BeautifulSoup as bs
 from typing import List
 from urllib.parse import urljoin
 from dataclasses import dataclass
 from enum import Enum, unique
-from fake_useragent import UserAgent
 
-from structure import extensions
+from structure import utils
 
 @unique
 class Extensions(Enum):
@@ -20,7 +20,7 @@ class Extensions(Enum):
 class TagOption(Enum):
     Lang = "language"
     Char = "character"
-    Tags = "Tag"
+    Tags = "tag"
     Artist = "artist"
     Parody = "parody"
     Group = "group"
@@ -121,11 +121,10 @@ class Hentai:
         self.desc = "Master's second to NONE library of wisdom"
         self.help = "Wha! Nothing to see here!"
         self.isSystem = True
-
+        
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": UserAgent().chrome})
-
+            "User-Agent": f"Natsume-chan - nHentai Wrapper API by u/nmrika"})
         self.APIurl = "https://nhentai.net/api/"
         self.HOMEurl = "https://nhentai.net/"
 

@@ -8,9 +8,13 @@
 		},
 		{
 			"path": "..\\hentai-libs"
+		},
+		{
+			"path": "..\\..\\TestBench"
 		}
 	],
 	"settings": {
-		"python.pythonPath": "C:\\Users\\YRyuu\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+		"python.pythonPath": "C:\\Python39\\python.exe",
+		"liveServer.settings.multiRootWorkspaceName": "TestBench",
 	}
 }

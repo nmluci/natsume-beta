@@ -1,97 +1,181 @@
-import importlib, os, sys, inspect
-from . import utils as utils
-import traceback
+from __future__ import annotations
+
+from types import ModuleType
+from typing import List, Dict
+from dataclasses import dataclass
+from pathlib import Path
+import importlib, sys, inspect
+
+from . import utils
+
+
+# modules
+# Extension's Name: ExtObj
+
+@dataclass
+class ExtObj:
+    classObj  : NatsumeExt = None
+    moduleObj : ModuleType = None
+    alias     : str = None
 
 class NatsumeExtMan:
-    def __init__(self, main, moduleList: list = []):
+    def __init__(self, main, moduleList: List = []):
         self.__VER = 1.0
-        self.utils = utils.NatsumeUtils()
-        self.__moduleList = moduleList
-        self.__moduleMap = dict()
         self.__loadedExt = 0
         self.__extFolder = "ext"
-        self.__extList = dict()
+        self.utils = utils.NatsumeUtils()
+        self.moduleList = moduleList
+        self.modules : Dict[str, ExtObj] = dict()
+        self.extRef  : Dict[str, ExtObj.classObj] = dict() # Alias, Class
         self.base = main
 
-
     def getCurrentModules(self):
-        print(self.__extList)
-        if self.__loadedExt == 0:
-            self.utils.printError("ExtLoader", "No Modules Has Been Loaded!")
+        if self.__loadedExt:
+            self.utils.printError("getCurrentModules", "No modules has been loaded!")
             exit()
-        currMod = list()
-        for moduleKey in self.__extList: currMod.append(moduleKey) 
-        return currMod
+
+        return  list(obj.name for _, obj in self.modules)
     
-    def reload(self, ext):
-        ext = ext[0]
-        if ext not in self.base.currMod: return self.utils.printError("ExtLoader", "Ext. {} Cannot Be Found!".format(ext))
-        newModule = importlib.reload(self.__moduleMap[ext])
-        newName = inspect.getmembers(newModule, inspect.isclass)[0][0]
-        self.base.currMod[ext] = getattr(newModule, newName)(self.base)
-
-    def reloadAll(self, extList: dict):
-        self.__loadedExt = 0
-        
-        for mod in extList:
-            for submodule in os.listdir(os.path.join(self.__extFolder, mod)):
-                if ("__" in submodule) or (".py" not in submodule): continue
-                submodule = submodule.split(".")[0]
-                fullModule = "{}.{}.{}".format(self.__extFolder, mod, submodule)
-                
-                if submodule in self.base.currMod:
-                    newModule = importlib.reload(self.__moduleMap[submodule])
-                    newName = inspect.getmembers(newModule, inspect.isclass)[0][0]
-                    self.base.currMod[submodule] = getattr(newModule, newName)(self.base)
-                else:
-                    self.__moduleMap[submodule] = importlib.import_module(fullModule, "{}.{}".format(self.__extFolder, mod))
-                    moduleName = inspect.getmembers(self.__moduleMap[submodule], inspect.isclass)[0][0]
-                    self.base.currMod[submodule] = getattr(self.__moduleMap[submodule], moduleName)(self.base)
-
-                if fullModule in sys.modules:
-                    self.__loadedExt += 1
-                else:
-                    self.utils.printError("ExtLoader", "{} Module Failed To Load!".format(fullModule))
-                self.__extList[submodule] = self.__moduleMap[submodule]
-
-    def loadAll(self) -> dict:
-        if self.__loadedExt != 0:
-            self.utils.printError("ExtLoader", "Modules Is Already Loaded!")
-            return -1
-
-        extRef = dict()
+    def reload(self, mod):
         try:
-            for module in self.__moduleList:
-                for submodule in os.listdir(os.path.join(self.__extFolder, module)):
-                    if ("__" in submodule) or (".py" not in submodule): continue
-                    submodule = submodule.split(".")[0]
-                    fullModule = "{}.{}.{}".format(self.__extFolder, module, submodule)
-                    self.__moduleMap[submodule] = importlib.import_module(fullModule, "{}.{}".format(self.__extFolder, module))
-                    moduleName = inspect.getmembers(self.__moduleMap[submodule], inspect.isclass)[0][0]
-                    extRef[submodule] = getattr(self.__moduleMap[submodule], moduleName)(self.base)
+            newExtRef = self.extRef.copy()
+            newExtObj = self.modules.copy()
+
+            for ext, extObj in self.modules.items():
+                if mod in extObj.alias:
+                    newModule = importlib.reload(extObj.moduleObj)
+
+                    for mod in inspect.getmembers(newModule, inspect.isclass):
+                        if issubclass(mod[1], NatsumeExt):
+                            self.utils.printInfo("ExtReload", f"Reloaded {mod[1]}")
+                            classObj = mod[1](main=self.base)
+                            moduleName = classObj.name
+                            if moduleName != extObj.classObj.name:
+                                self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
                     
-                    if fullModule in sys.modules:
-                        self.__loadedExt += 1
-                    else:
-                        self.printError("ExtLoader", "{} Module Failed To Load!".format(fullModule))
-                    self.__extList[submodule] = self.__moduleMap[submodule]
+                    newAlias = list(filter(lambda x: x not in extObj.alias, classObj.alias))
+                    self.utils.printInfo("ExtReload", "Removing old instance from list")
+                    newExtObj.pop(extObj.classObj.name)
+                    self.utils.printInfo("ExtReload", "Removing aliases from list")
+                    for alias in extObj.alias:
+                        newExtRef.pop(alias)
+
+                    newExtObj[moduleName] = ExtObj(classObj, newModule, classObj.alias)
+                    for alias in classObj.alias:
+                        if alias == "NatsumeBaseExtensions": continue
+                        if alias not in newExtRef.keys():
+                            newExtRef[alias] = newExtObj[moduleName].classObj
+                            if alias in newAlias: self.utils.printInfo("ExtReload", f"Found new alias: {alias}")
+                        else:
+                            self.utils.printInfo("ExtReload", newExtObj[moduleName].classObj.alias)
+                            self.utils.printInfo("ExtReload", extObj.classObj.alias)
+                            raise AttributeError(f"Conflicting Aliases Found! {alias}")
 
         except Exception as e:
-            self.utils.printError("ExtMan", e)
+            import traceback
             traceback.print_exc()
+            self.utils.printError("ExtLoader", e)
+        else:
+            self.modules = newExtObj
+            self.extRef = newExtRef
+            return self.extRef  
+
+    def loadAll(self):
+        if self.__loadedExt != 0:
+            self.utils.printError("ExtLoader", "Modules already loaded!")
+        
+        try:
+            for module in self.moduleList:
+                for submodule in filter(lambda x: ("__" not in x.name) and (".py" == x.suffix), 
+                                        list(Path(self.__extFolder, module).glob("*"))):
+                    
+                    pkgName = f"{self.__extFolder}.{module}"
+                    fullModule = str(submodule).replace("\\", ".").split(".py")[0]
+                    moduleObj = importlib.import_module(fullModule, pkgName)
+                    
+                    for mod in inspect.getmembers(moduleObj, inspect.isclass):
+                        if issubclass(mod[1], NatsumeExt):
+                            self.utils.printInfo("ExtLoader", f"Found {mod[1]}")
+                            classObj = mod[1](main=self.base)
+                            moduleName = classObj.name
+                        else:
+                            self.utils.printError("ExtLoader", F"Found {mod[1]}")
+                    
+                    if not (classObj or fullModule in sys.modules):
+                        raise AttributeError(f"{module} contains no suitable extensions")
+                    # Mapping aliases and generic name into classObj
+                    self.modules[moduleName] = ExtObj(classObj, moduleObj, classObj.alias)
+                    
+                    for alias in self.modules[moduleName].classObj.alias:
+                        if alias == "NatsumeBaseExtensions": continue
+                        if alias not in self.extRef.keys():
+                            self.extRef[alias] = self.modules[moduleName].classObj
+                        else:
+                            raise AttributeError(f"Conflicting Aliases Found! {alias}")
+
+                    self.utils.printInfo("ExtLoader", f"{moduleName}, {fullModule}")
+
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self.utils.printError("ExtLoader", e)
         finally:
-            return extRef
+            for cmd, mod in self.extRef.items():
+                self.utils.printInfo("Available Cmdlet", f"{cmd} {mod}")
+            return self.extRef
+
+    def reloadAll(self):
+        self.__loadedExt = 0
+        newExtDict: Dict[str, ExtObj] = dict()
+        newExtRef: Dict[str, ExtObj.classObj] = dict()
+
+        try:
+            for mod, ext in self.modules.items():
+                moduleObj = importlib.reload(ext.moduleObj)
+
+                for mod in inspect.getmembers(moduleObj, inspect.isclass):
+                    if issubclass(mod[1], NatsumeExt):
+                        self.utils.printInfo("ExtReload", f"Found {mod[1]}")
+                        classObj = mod[1](main=self.base)
+                        moduleName = classObj.name
+                        if moduleName != ext.classObj.name:
+                            self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
+
+                                    
+                newAlias = list(filter(lambda x: x not in ext.alias, classObj.alias))
+                newExtDict[moduleName] = ExtObj(classObj, moduleObj, classObj.alias)
+
+                for alias in classObj.alias:
+                    if alias == "NatsumeBaseExtensions": continue
+                    if alias not in newExtRef.keys():
+                        newExtRef[alias] = newExtDict[moduleName].classObj
+                        if alias in newAlias: self.utils.printInfo("ExtReload", f"Found new alias: {alias}")
+                    else:
+                        self.utils.printInfo("ExtReload", newExtDict[moduleName].classObj.alias)
+                        self.utils.printInfo("ExtReload", ext.classObj.alias)
+                        raise AttributeError(f"Conflicting Aliases Found! {alias}")
+                
+                self.utils.printInfo("ExtReload", f"Reloaded {moduleName}")
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self.utils.printError("ExtReload", e)
+        else:
+            self.modules = newExtDict
+            self.extRef = newExtRef
+            return self.extRef 
 
 class NatsumeExt:
     def __init__(self, main):
         self.__VER = 1.0
         self.base = main
         self.utils = utils.NatsumeUtils()
-        self.name = "Natsume Base Extension"
+        self.name = "NatsumeBaseExtensions"
         self.args = dict()
-        self.help = "Wha! Nothing to see here!"
+        self.help =  "Wha! Nothing to see here!"
         self.desc = self.help
+        self.alias = [self.name]
         self.isSystem = False
-        
+    
     def execute(self, args):
-        print("Whoa, Unimplemented Feature! Nice nice... now.. GET BACK TO WORK!")
+        return print("Whoa, Unimplemented Feature Here! Nice nice.... now.. GET BACK TO WORK!")

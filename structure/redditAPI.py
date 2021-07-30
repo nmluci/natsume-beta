@@ -1,10 +1,11 @@
-from structure import extensions
+from .utils import NatsumeUtils
 import praw
 import json, os, sys
 
-class NatsumeRedditAPI:
+class NatsumeRedditAPI():
     def __init__(self):
-        self.cred = self.base.settings["reddit"]
+        self.utils = NatsumeUtils()
+        self.cred = self.utils.getConfig()["reddit"]
         self.args = {
             "subreddit": "subreddit, if plural, considers joining it with \"+\" ",
             "limit": "Limits",

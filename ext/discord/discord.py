@@ -6,6 +6,7 @@ class NatsumeDiscordAPI(extensions.NatsumeExt):
         super().__init__(main)
         self.name = "discordman"
         self.isSystem = True
+        self.alias = [self.name]
 
     def execute(self, args):
         return super().execute(args)

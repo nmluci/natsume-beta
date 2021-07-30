@@ -5,7 +5,8 @@ class NatsumeHelp(extensions.NatsumeExt):
     def __init__(self, main):
         super().__init__(main)
         self.__VER = 1.0
-        self.name = "about"
+        self.name = "help"
+        self.alias = ["h"]
         self.desc = "Shows Help"
         self.help = "This is HELP!"
         self.args = {

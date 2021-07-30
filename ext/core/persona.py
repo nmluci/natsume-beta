@@ -6,6 +6,7 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
         super().__init__(main)
         self.__VER = 1.0
         self.name = "personality"
+        self.alias = [self.name]
         self.desc = "Natsume's Personality Manager"
         self.args = {
             "opt": "Mode to Use"

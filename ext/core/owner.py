@@ -5,6 +5,7 @@ class NatsumeOwner(extensions.NatsumeExt):
         super().__init__(main)
         self.name = "owner"
         self.__Ver = "1.0"
+        self.alias = [self.name]
 
     def execute(self, args):
         print("Current Loaded Modules")
