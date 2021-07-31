@@ -3,7 +3,7 @@ from structure import extensions
 
 class NatsumeApp:
     def __init__(self):
-        self.__VER = 0.3
+        self.VER = 0.3
         self.isExit = False
         self.currMod = dict()
         self.currCmd = ""
@@ -14,13 +14,16 @@ class NatsumeApp:
         self.currMod['salute'].execute(["startup"])
 
     def argParser(self, args: str):
-        if args == "": return self.utils.printError("app", "What's your command?")
-        args = self.utils.argsParser(args)
-        if args[0] in self.currMod:
-            self.currMod[args[0]].execute(args[1:])
-        else:
-            self.utils.printError("app", "{} not found!".format(args[0] if len(args) >= 1 else "Command"))
-        
+        try:
+            if args == "": return self.utils.printError("app", "What's your command?")
+            args = self.utils.argsParser(args)
+            if args[0] in self.currMod:
+                self.currMod[args[0]].execute(args[1:])
+            else:
+                self.utils.printError("app", "{} not found!".format(args[0] if len(args) >= 1 else "Command"))
+        except Exception as e:
+            self.utils.printError("Main", e)
+            
     def main(self):
         isExit = False
         while (not isExit):

@@ -4,16 +4,15 @@ import sys, os
 class NatsumeHelp(extensions.NatsumeExt):
     def __init__(self, main):
         super().__init__(main)
-        self.__VER = 1.0
-        self.name = "help"
-        self.alias = ["h"]
+        self.name = "Help"
+        self.alias = ["h", "help"]
         self.desc = "Shows Help"
         self.help = "This is HELP!"
         self.args = {
             "cmdlets": "Command Name"
         }
 
-    def execute(self, args):
+    def beta_execute(self, args):
         sys.stdout.write("Natsume-chan Help Board!\n\n")
 
         if len(args) >= 1:
@@ -29,3 +28,28 @@ class NatsumeHelp(extensions.NatsumeExt):
                 if self.base.currMod[mods].desc: sys.stdout.write("\t\"{}\"\n".format(self.base.currMod[mods].desc))
             sys.stdout.write("Type {}\"help <command here>\"{} to get details information about the command!\n\n"
                                 .format(self.utils.XRED, self.utils.CLR))
+
+    def execute(self, args):
+        self.altExc(args) if "alt" in args else self.beta_execute(args)
+
+    def altExc(self, args):
+        for name, ext in self.base.ExtLoader.getCurrentModules():
+            self.parseCommandInfo(ext)
+
+    def parseArgsInfo(self, cmdlet:extensions.ExtObj):
+        return ", ".join(list(x for x in cmdlet.classObj.args))
+
+    def parseCommandInfo(self, cmdlet: extensions.ExtObj):
+        sys.stdout.write("{:>3}<{}>{}\n".format(
+            self.utils.XBLUE, cmdlet.classObj.name, self.utils.CLR
+        ))
+        sys.stdout.write("{:>6}Aliases: {}{}{}\n".format(
+            self.utils.BLUE, self.utils.RED, ", ".join(cmdlet.alias), self.utils.CLR 
+        ))
+        sys.stdout.write("{:>6}Description: {}{}{}\n".format(
+            self.utils.BLUE, self.utils.RED, cmdlet.classObj.desc, self.utils.CLR 
+        ))
+        sys.stdout.write("{:>6}Args: {}{}{}\n".format(
+            self.utils.BLUE, self.utils.RED, self.parseArgsInfo(cmdlet), self.utils.CLR 
+        ))
+        

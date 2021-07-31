@@ -9,9 +9,6 @@ import importlib, sys, inspect
 from . import utils
 
 
-# modules
-# Extension's Name: ExtObj
-
 @dataclass
 class ExtObj:
     classObj  : NatsumeExt = None
@@ -34,7 +31,7 @@ class NatsumeExtMan:
             self.utils.printError("getCurrentModules", "No modules has been loaded!")
             exit()
 
-        return  list(obj.name for _, obj in self.modules)
+        return self.modules.items()
     
     def reload(self, mod):
         try:
@@ -78,7 +75,7 @@ class NatsumeExtMan:
         else:
             self.modules = newExtObj
             self.extRef = newExtRef
-            return self.extRef  
+            self.base.currMod = self.extRef
 
     def loadAll(self):
         if self.__loadedExt != 0:
@@ -141,7 +138,7 @@ class NatsumeExtMan:
                         if moduleName != ext.classObj.name:
                             self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
 
-                                    
+
                 newAlias = list(filter(lambda x: x not in ext.alias, classObj.alias))
                 newExtDict[moduleName] = ExtObj(classObj, moduleObj, classObj.alias)
 
@@ -163,7 +160,7 @@ class NatsumeExtMan:
         else:
             self.modules = newExtDict
             self.extRef = newExtRef
-            return self.extRef 
+            self.base.currMod = self.extRef
 
 class NatsumeExt:
     def __init__(self, main):
