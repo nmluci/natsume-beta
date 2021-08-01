@@ -7,6 +7,11 @@ class NatsumeExtReload(extensions.NatsumeExt):
         self.name = "reload"
         self.isSystem = True
         self.alias = [self.name]
+        self.args = [
+            {
+                "name": "modules"
+            }
+        ]
 
     def execute(self, args):
         if args[0] in self.base.currMod:
@@ -22,4 +27,4 @@ class NatsumeExtReload(extensions.NatsumeExt):
             self.base.settings = self.utils.getConfig()
             self.base.ExtLoader.reloadAll(self.base.settings["natsume"]["extensions"])
         else:
-            self.utils.printError("Reload", "{} isn't loaded...".format(args))
+            self.utils.printError("Reload", "{} isn't a valid module...".format(args))

@@ -8,13 +8,32 @@ import importlib, sys, inspect
 
 from . import utils
 
-
 @dataclass
 class ExtObj:
     classObj  : NatsumeExt = None
     moduleObj : ModuleType = None
     alias     : str = None
 
+    @classmethod
+    def validateArgs(cls, obj: NatsumeExt):
+        printError = utils.NatsumeUtils().printError
+        printInfo  = utils.NatsumeUtils().printInfo
+
+        if obj.args is None:
+            printError("ValidateArgs", f"Skipping {obj.name}: No Args found!")
+            return
+        if type(obj.args) != list: 
+            printError("ValidateArgs", "Invalid type!")
+            obj.args = [{}]
+        
+        for arg in obj.args:
+            if "name" not in arg.keys():
+                printInfo("VaildateArgs", "Args Name isn\'t listed!")
+            if "optional" not in arg.keys():
+                arg["optional"] = False
+            if "type" not in arg.keys():
+                arg["type"] = str
+        
 class NatsumeExtMan:
     def __init__(self, main, moduleList: List = []):
         self.__VER = 1.0
@@ -26,13 +45,35 @@ class NatsumeExtMan:
         self.extRef  : Dict[str, ExtObj.classObj] = dict() # Alias, Class
         self.base = main
 
+    def execute(self, ext, args: list):
+        try:
+            ext = self.extRef[ext]
+            
+            if not ext.args:
+                ext.run(None)
+            else:
+                if len(ext.args) != len(args):
+                    for arg in ext.args:
+                        temp = input(f"{arg['name']}: ")
+                        if "cancel" in temp.lower(): raise ValueError("Action canceled")
+                        args.append(temp)
+
+                ext.run(args)
+        
+        except KeyError:
+            self.utils.printError("Execute", f"{ext} isn't a valid alias")
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self.utils.printError("Execute", f"{e}")
+    
     def getCurrentModules(self):
         if self.__loadedExt:
             self.utils.printError("getCurrentModules", "No modules has been loaded!")
             exit()
 
         return self.modules.items()
-    
+
     def reload(self, mod):
         try:
             newExtRef = self.extRef.copy()
@@ -57,7 +98,9 @@ class NatsumeExtMan:
                     for alias in extObj.alias:
                         newExtRef.pop(alias)
 
+                    ExtObj.validateArgs(classObj)
                     newExtObj[moduleName] = ExtObj(classObj, newModule, classObj.alias)
+                    
                     for alias in classObj.alias:
                         if alias == "NatsumeBaseExtensions": continue
                         if alias not in newExtRef.keys():
@@ -101,6 +144,7 @@ class NatsumeExtMan:
                     if not (classObj or fullModule in sys.modules):
                         raise AttributeError(f"{module} contains no suitable extensions")
                     # Mapping aliases and generic name into classObj
+                    ExtObj.validateArgs(classObj)
                     self.modules[moduleName] = ExtObj(classObj, moduleObj, classObj.alias)
                     
                     for alias in self.modules[moduleName].classObj.alias:
@@ -139,9 +183,11 @@ class NatsumeExtMan:
                             self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
 
 
+                ExtObj.validateArgs(classObj)
                 newAlias = list(filter(lambda x: x not in ext.alias, classObj.alias))
                 newExtDict[moduleName] = ExtObj(classObj, moduleObj, classObj.alias)
 
+                    
                 for alias in classObj.alias:
                     if alias == "NatsumeBaseExtensions": continue
                     if alias not in newExtRef.keys():
@@ -163,16 +209,20 @@ class NatsumeExtMan:
             self.base.currMod = self.extRef
 
 class NatsumeExt:
+    aliasBind = dict()
     def __init__(self, main):
         self.__VER = 1.0
         self.base = main
         self.utils = utils.NatsumeUtils()
         self.name = "NatsumeBaseExtensions"
-        self.args = dict()
+        self.args : list[dict] = None
         self.help =  "Wha! Nothing to see here!"
         self.desc = self.help
         self.alias = [self.name]
         self.isSystem = False
-    
+        self.run = self.execute
+
     def execute(self, args):
         return print("Whoa, Unimplemented Feature Here! Nice nice.... now.. GET BACK TO WORK!")
+
+        

@@ -7,11 +7,19 @@ class NatsumeRedditDownloader(extensions.NatsumeExt):
     def __init__(self, main):
         super().__init__(main)
         self.name = "Reddit"
-        self.args = {
-            "subreddit": "subreddit, if plural, considers joining it with \"+\"",
-            "sum": "limits",
-            "download": "toggle download or not"
-        }
+        self.args = [
+            {
+                "name": "subreddit"
+            },
+            {
+                "name": "sum",
+                "type": int,
+            },
+            {
+                "name": "download",
+                "optional": True
+            }
+        ]
         self.alias = [self.name.lower()]
         self.isSystem = False
         self.reddit = NatsumeRedditAPI()

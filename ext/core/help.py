@@ -9,8 +9,12 @@ class NatsumeHelp(extensions.NatsumeExt):
         self.desc = "Shows Help"
         self.help = "This is HELP!"
         self.args = {
-            "cmdlets": "Command Name"
+            "cmdlets": {
+                "desc": "Command name",
+                "optional": True
+            }
         }
+        self.run = self.altExc
 
     def beta_execute(self, args):
         sys.stdout.write("Natsume-chan Help Board!\n\n")

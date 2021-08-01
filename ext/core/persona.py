@@ -8,9 +8,11 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
         self.name = "personality"
         self.alias = [self.name]
         self.desc = "Natsume's Personality Manager"
-        self.args = {
-            "opt": "Mode to Use"
-        }
+        self.args = [ 
+            {
+                "name": "Mode to Use"
+            }
+        ]
         self.isSystem = True
         self.personas = dict()
         self.currPersona = dict()

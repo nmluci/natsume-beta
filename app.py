@@ -17,10 +17,8 @@ class NatsumeApp:
         try:
             if args == "": return self.utils.printError("app", "What's your command?")
             args = self.utils.argsParser(args)
-            if args[0] in self.currMod:
-                self.currMod[args[0]].execute(args[1:])
-            else:
-                self.utils.printError("app", "{} not found!".format(args[0] if len(args) >= 1 else "Command"))
+            self.ExtLoader.execute(args[0], args[1:])
+            # self.currMod[args[0]].execute(args[1:])
         except Exception as e:
             self.utils.printError("Main", e)
             

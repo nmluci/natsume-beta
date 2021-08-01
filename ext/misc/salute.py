@@ -7,6 +7,7 @@ class NatsumePersonaGreets(extensions.NatsumeExt):
         self.alias = [self.name]
         self.isSystem = True
         self.alias = [self.name]
+        self.run = self.execute
 
     def execute(self, args):
         if type(args) == list and len(args) != 0: 

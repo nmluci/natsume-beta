@@ -13,7 +13,13 @@ class NatsumeDivineObj(extensions.NatsumeExt):
         self.desc = "Come, Join US to the AHHH side"
         self.help = "Come, Join US to the AHHH side"
         self.alias = ["hentai", "nh", "doujin"]
-        # self.alias = ["hentai"]
+        self.args = [
+            {
+                "name": "id",
+                "type": str,
+                "desc": "BookID"
+            }
+        ]
         self.isSystem = False
         self.hentai = Hentai()
         self.dler = ExtDownloader()
@@ -31,8 +37,9 @@ class NatsumeDivineObj(extensions.NatsumeExt):
                     self.helpMenu()
                 else:
                     return super().execute(args)
+            elif args[0].lower() == "search": self.searchDoujin(args)
             else:
-                if args[0].lower() == "search": self.searchDoujin(args)
+                super().execute()
         except Exception as e:
             self.utils.printError("nh", f"An Error Occured: {e}")
 
@@ -53,7 +60,8 @@ class NatsumeDivineObj(extensions.NatsumeExt):
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Character", doujin.character, self.utils.CLR))
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Pages", doujin.num_pages, self.utils.CLR))
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Tags", doujin.tags, self.utils.CLR))
-    
+        print("{}{:<10}: {}{}".format(self.utils.BLUE, "Lang", doujin.lang, self.utils.CLR))
+
         dlconfirm = input("Download? ")
         if "yes" == dlconfirm:
             try:
@@ -64,10 +72,6 @@ class NatsumeDivineObj(extensions.NatsumeExt):
                 self.utils.printError("nh", f"Another Exception Occured: {e}")
             else:
                 self.downloadDoujin(self.hentai.getDoujin(nukecode))
-
-    def helpMenu(self):
-        sys.stdout.write(
-            f"{self.utils.RED}{self.name} <num> => Return Divine Book's Information{self.utils.CLR}\n")
 
     def searchDoujin(self, args, all=False):
         try: 

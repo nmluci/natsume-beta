@@ -86,6 +86,7 @@ class Book:
         self.rawTag = [self.__parseTags__(tag) for tag in data["tags"]] 
         self.character = Tag.getTags(self.rawTag, TagOption.Char)
         self.tags = Tag.getTags(self.rawTag, TagOption.Tags)
+        self.lang = Tag.getTags(self.rawTag, TagOption.Lang)
 
         self.pages = [
             self.__parsePage__(self.media_id, num, **_) for num, _ in enumerate(images["pages"], start=1)

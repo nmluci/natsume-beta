@@ -7,7 +7,6 @@ class NatsumeExit(extensions.NatsumeExt):
         self.__VER = 1.0
         self.isSystem = True
         self.alias = [self.name]
-
     def execute(self, args):
         self.base.currMod["salute"].execute(["shutdown"])
         exit()

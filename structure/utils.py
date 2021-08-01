@@ -1,4 +1,4 @@
-import signal, json, re, time
+import signal, json, re, time, threading
 from typing import List
 from colorama import init, Fore
 
@@ -12,6 +12,7 @@ class NatsumeUtils:
         self.XGREEN = Fore.LIGHTGREEN_EX
         self.XBLUE = Fore.LIGHTBLUE_EX
         self.CLR = Fore.RESET
+        self.lock = threading.Lock()
         self.uptime = time.time()
         signal.signal(signal.SIGINT, self.graceExit)
         signal.signal(signal.SIGTERM, self.graceExit)
@@ -54,10 +55,10 @@ class NatsumeUtils:
             return json.load(cfg)
 
     def printError(self, mod, err):
-        print("{}[{}] {}{}".format(self.RED, mod, err, self.CLR))
+        with self.lock: print("{}[{}] {}{}".format(self.RED, mod, err, self.CLR))
 
     def printInfo(self, mod, info):
-        print(f"{self.BLUE}[{mod}] {info}{self.CLR}")
+        with self.lock: print(f"{self.BLUE}[{mod}] {info}{self.CLR}")
 
     def argsParser(self, args: str) -> List[str]:
         return re.findall("(?:\".*?[^\\\\]\"|\S)+", args)
