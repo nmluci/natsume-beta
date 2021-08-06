@@ -6,11 +6,12 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
         super().__init__(main)
         self.__VER = 1.0
         self.name = "personality"
-        self.alias = [self.name]
+        self.alias = [self.name, "persona"]
         self.desc = "Natsume's Personality Manager"
         self.args = [ 
             {
-                "name": "Mode to Use"
+                "name": "mode",
+                "desc": "Mode to Use"
             }
         ]
         self.isSystem = True
@@ -26,7 +27,10 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
 
         self.currPersona = self.personas[self.base.settings["natsume"]["persona"]]
 
-    def execute(self, args):
-        if args and args[0] in self.personas:
-            self.currPersona = self.personas[args[0]]
-            print("Current Persona: {}".format(args))
+    def execute(self, mode):
+        if mode in self.personas:
+            self.base.settings["natsume"]["persona"] = mode
+            
+            print("Current Persona: {}".format(mode))
+        else:
+            self.utils.printError("Personality", f"{mode} is not a valid personality")

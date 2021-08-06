@@ -33,7 +33,9 @@ class ExtObj:
                 arg["optional"] = False
             if "type" not in arg.keys():
                 arg["type"] = str
-        
+            if "default" not in arg.keys():
+                arg["default"] = ""
+
 class NatsumeExtMan:
     def __init__(self, main, moduleList: List = []):
         self.__VER = 1.0
@@ -42,31 +44,38 @@ class NatsumeExtMan:
         self.utils = utils.NatsumeUtils()
         self.moduleList = moduleList
         self.modules : Dict[str, ExtObj] = dict()
-        self.extRef  : Dict[str, ExtObj.classObj] = dict() # Alias, Class
+        self.extRef  : Dict[str, ExtObj.classObj] = dict() 
         self.base = main
 
     def execute(self, ext, args: list):
         try:
             ext = self.extRef[ext]
+            kwargs = {}
+            if ext.args:
+                for x in range(len(ext.args)):
+                    argType = ext.args[x]["type"]
+                    try:
+                        kwargs[ext.args[x]["name"]] = args[x]
+                    except IndexError:
+                        arg = input(f'{ext.args[x]["name"]}: ')
+                        kwargs[ext.args[x]["name"]] = argType(arg) if arg else argType(ext.args[x]["default"]) 
             
-            if not ext.args:
-                ext.run(None)
-            else:
-                if len(ext.args) != len(args):
-                    for arg in ext.args:
-                        temp = input(f"{arg['name']}: ")
-                        if "cancel" in temp.lower(): raise ValueError("Action canceled")
-                        args.append(temp)
-
-                ext.run(args)
+            self.utils.clrscr()
+            ext.run(**kwargs)
         
         except KeyError:
             self.utils.printError("Execute", f"{ext} isn't a valid alias")
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("Execute", f"{e}")
-    
+
+    def getModule(self, alias):
+        if alias not in self.extRef: 
+            self.utils.printInfo("getModule", f"{alias} isn't a valid alias")
+        for name, ext in self.modules.items():
+            if alias in ext.alias:
+                return ext
+        
+
     def getCurrentModules(self):
         if self.__loadedExt:
             self.utils.printError("getCurrentModules", "No modules has been loaded!")
@@ -112,8 +121,6 @@ class NatsumeExtMan:
                             raise AttributeError(f"Conflicting Aliases Found! {alias}")
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("ExtLoader", e)
         else:
             self.modules = newExtObj
@@ -157,8 +164,6 @@ class NatsumeExtMan:
                     self.utils.printInfo("ExtLoader", f"{moduleName}, {fullModule}")
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("ExtLoader", e)
         finally:
             for cmd, mod in self.extRef.items():
@@ -200,8 +205,6 @@ class NatsumeExtMan:
                 
                 self.utils.printInfo("ExtReload", f"Reloaded {moduleName}")
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("ExtReload", e)
         else:
             self.modules = newExtDict
@@ -209,7 +212,6 @@ class NatsumeExtMan:
             self.base.currMod = self.extRef
 
 class NatsumeExt:
-    aliasBind = dict()
     def __init__(self, main):
         self.__VER = 1.0
         self.base = main
@@ -217,6 +219,7 @@ class NatsumeExt:
         self.name = "NatsumeBaseExtensions"
         self.args : list[dict] = None
         self.help =  "Wha! Nothing to see here!"
+        self.group = "Misc"
         self.desc = self.help
         self.alias = [self.name]
         self.isSystem = False

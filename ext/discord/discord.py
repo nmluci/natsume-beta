@@ -8,5 +8,5 @@ class NatsumeDiscordAPI(extensions.NatsumeExt):
         self.isSystem = True
         self.alias = [self.name]
 
-    def execute(self, args):
-        return super().execute(args)
+    def execute(self):
+        return super().execute(None)

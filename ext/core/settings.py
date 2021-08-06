@@ -7,6 +7,6 @@ class NatsumeSettings(extensions.NatsumeExt):
         self.isSystem = True
         self.alias = [self.name]
 
-    def execute(self, args):
+    def execute(self):
         for subset in self.base.settings:
             print(subset, self.base.settings[subset])
