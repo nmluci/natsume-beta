@@ -7,8 +7,8 @@ from structure.download import ExtDownloader
 import sys
 
 class NatsumeDivineObj(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "nhentai"
         self.desc = "Come, Join US to the AHHH side"
         self.help = "Come, Join US to the AHHH side"

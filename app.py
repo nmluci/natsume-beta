@@ -8,9 +8,8 @@ class NatsumeApp:
         self.currMod = dict()
         self.currCmd = ""
         self.utils = utils.NatsumeUtils()
-        self.settings = self.utils.getConfig()
-        self.ExtLoader = extensions.NatsumeExtMan(self, self.settings["natsume"]["extensions"])
-        self.currMod = self.ExtLoader.loadAll()
+        self.ExtLoader = extensions.NatsumeExtMan(self, self.utils)
+        self.currMod= self.ExtLoader.loadAll()
         self.currMod['salute'].execute(["startup"])
 
     def argParser(self, args: str):
@@ -24,9 +23,13 @@ class NatsumeApp:
             
     def main(self):
         isExit = False
+        
         while (not isExit):
             self.argParser(str(input("natsume > ")))
         
 if __name__ == "__main__":
+    import sys
     app = NatsumeApp()
+    if "--colorless" in sys.argv:
+        sys.stdout.write("[ConfigLoader] Executing in B/W Mode...\n")
     app.main()

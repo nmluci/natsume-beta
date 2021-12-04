@@ -1,8 +1,8 @@
 from structure import extensions
 import sys
 class NatsumePersonaGreets(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "salute"
         self.alias = [self.name]
         self.isSystem = True

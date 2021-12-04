@@ -2,8 +2,8 @@ from structure import extensions
 import json, os
 
 class NatsumePersonalityMan(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.__VER = 1.0
         self.name = "personality"
         self.alias = [self.name]
@@ -24,7 +24,7 @@ class NatsumePersonalityMan(extensions.NatsumeExt):
             with open(os.path.join(self.personaDir, persona), "r+") as f:
                 self.personas[persona.split(".")[0]] = json.load(f)
 
-        self.currPersona = self.personas[self.base.settings["natsume"]["persona"]]
+        self.currPersona = self.personas[self.base.ExtLoader.settings["natsume"]["persona"]]
 
     def execute(self, args):
         if args and args[0] in self.personas:

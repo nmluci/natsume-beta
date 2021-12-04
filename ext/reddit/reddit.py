@@ -4,8 +4,8 @@ from structure import extensions
 import os, json, sys
 
 class NatsumeRedditDownloader(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "Reddit"
         self.args = [
             {

@@ -1,8 +1,8 @@
 from structure import extensions
 
 class NatsumeOwner(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "owner"
         self.__Ver = "1.0"
         self.alias = [self.name]

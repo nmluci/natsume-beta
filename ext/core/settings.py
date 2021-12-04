@@ -1,8 +1,8 @@
 from structure import extensions
 
 class NatsumeSettings(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "setting"
         self.isSystem = True
         self.alias = [self.name]

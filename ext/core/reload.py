@@ -2,8 +2,8 @@ from typing import final
 from structure import extensions
 
 class NatsumeExtReload(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "reload"
         self.isSystem = True
         self.alias = [self.name]

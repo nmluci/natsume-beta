@@ -2,8 +2,8 @@ from structure import extensions
 import sys, os
 
 class NatsumeHelp(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "Help"
         self.alias = ["h", "help"]
         self.desc = "Shows Help"

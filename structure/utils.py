@@ -1,17 +1,27 @@
-import signal, json, re, time, threading
+import signal, json, re, time, threading, sys
 from typing import List
-from colorama import init, Fore
+from colorama import init, Fore, Style
 
 class NatsumeUtils:
     def __init__(self):
         init(convert=True)
-        self.RED = Fore.MAGENTA
-        self.GREEN = Fore.GREEN
-        self.BLUE = Fore.BLUE
-        self.XRED = Fore.LIGHTMAGENTA_EX
-        self.XGREEN = Fore.LIGHTGREEN_EX
-        self.XBLUE = Fore.LIGHTBLUE_EX
-        self.CLR = Fore.RESET
+
+        if "--colorless" in sys.argv:
+            self.RED = Fore.WHITE
+            self.GREEN = Fore.WHITE
+            self.BLUE = Fore.WHITE
+            self.XRED = Fore.WHITE
+            self.XGREEN = Fore.WHITE
+            self.XBLUE = Fore.WHITE
+            self.CLR = Fore.WHITE
+        else:
+            self.RED = Fore.MAGENTA
+            self.GREEN = Fore.GREEN
+            self.BLUE = Fore.BLUE
+            self.XRED = Fore.LIGHTMAGENTA_EX
+            self.XGREEN = Fore.LIGHTGREEN_EX
+            self.XBLUE = Fore.LIGHTBLUE_EX
+            self.CLR = Style.RESET_ALL
         self.lock = threading.Lock()
         self.uptime = time.time()
         signal.signal(signal.SIGINT, self.graceExit)

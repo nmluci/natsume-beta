@@ -35,12 +35,13 @@ class ExtObj:
                 arg["type"] = str
         
 class NatsumeExtMan:
-    def __init__(self, main, moduleList: List = []):
+    def __init__(self, main, utility: utils.NatsumeUtils, moduleList: List = []):
         self.__VER = 1.0
         self.__loadedExt = 0
         self.__extFolder = "ext"
-        self.utils = utils.NatsumeUtils()
-        self.moduleList = moduleList
+        self.utils: utils.NatsumeUtils = utility
+        self.settings = self.utils.getConfig()
+        self.moduleList = self.settings["natsume"]["extensions"]
         self.modules : Dict[str, ExtObj] = dict()
         self.extRef  : Dict[str, ExtObj.classObj] = dict() # Alias, Class
         self.base = main
@@ -48,12 +49,14 @@ class NatsumeExtMan:
     def execute(self, ext, args: list):
         try:
             ext = self.extRef[ext]
+            minimumArgs = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
             
-            if not ext.args:
+            if not minimumArgs:
                 ext.run(None)
             else:
-                if len(ext.args) != len(args):
-                    for arg in ext.args:
+                if len(minimumArgs) != len(args):
+                    for arg in minimumArgs:
+                        if arg["optional"]: continue
                         temp = input(f"{arg['name']}: ")
                         if "cancel" in temp.lower(): raise ValueError("Action canceled")
                         args.append(temp)
@@ -112,8 +115,8 @@ class NatsumeExtMan:
                             raise AttributeError(f"Conflicting Aliases Found! {alias}")
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
+            # import traceback
+            # traceback.print_exc()
             self.utils.printError("ExtLoader", e)
         else:
             self.modules = newExtObj
@@ -136,7 +139,7 @@ class NatsumeExtMan:
                     for mod in inspect.getmembers(moduleObj, inspect.isclass):
                         if issubclass(mod[1], NatsumeExt):
                             self.utils.printInfo("ExtLoader", f"Found {mod[1]}")
-                            classObj = mod[1](main=self.base)
+                            classObj = mod[1](utils=self.utils, main=self.base)
                             moduleName = classObj.name
                         else:
                             self.utils.printError("ExtLoader", F"Found {mod[1]}")
@@ -210,10 +213,10 @@ class NatsumeExtMan:
 
 class NatsumeExt:
     aliasBind = dict()
-    def __init__(self, main):
+    def __init__(self, main, utils=utils):
         self.__VER = 1.0
         self.base = main
-        self.utils = utils.NatsumeUtils()
+        self.utils = utils
         self.name = "NatsumeBaseExtensions"
         self.args : list[dict] = None
         self.help =  "Wha! Nothing to see here!"

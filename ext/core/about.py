@@ -3,8 +3,8 @@ from structure import extensions
 import sys, os, psutil
 
 class NatsumeAbout(extensions.NatsumeExt):
-    def __init__(self, main):
-        super().__init__(main)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.name = "about"
         self.desc = "Help Function"
         self.alias = ["about", "whoami", "me"]
