@@ -52,7 +52,7 @@ class NatsumeExtMan:
             minimumArgs = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
             
             if not minimumArgs:
-                ext.run(None)
+                ext.run(args if args else None)
             else:
                 if len(minimumArgs) != len(args):
                     for arg in minimumArgs:
@@ -70,11 +70,12 @@ class NatsumeExtMan:
             traceback.print_exc()
             self.utils.printError("Execute", f"{e}")
     
-    def getCurrentModules(self):
+    def getCurrentModules(self, alias: str=None):
         if self.__loadedExt:
             self.utils.printError("getCurrentModules", "No modules has been loaded!")
             exit()
-
+        if alias:
+            return self.extRef[alias]
         return self.modules.items()
 
     def reload(self, mod):
@@ -89,7 +90,7 @@ class NatsumeExtMan:
                     for mod in inspect.getmembers(newModule, inspect.isclass):
                         if issubclass(mod[1], NatsumeExt):
                             self.utils.printInfo("ExtReload", f"Reloaded {mod[1]}")
-                            classObj = mod[1](main=self.base)
+                            classObj = mod[1](utils=self.utils, main=self.base)
                             moduleName = classObj.name
                             if moduleName != extObj.classObj.name:
                                 self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
@@ -180,7 +181,7 @@ class NatsumeExtMan:
                 for mod in inspect.getmembers(moduleObj, inspect.isclass):
                     if issubclass(mod[1], NatsumeExt):
                         self.utils.printInfo("ExtReload", f"Found {mod[1]}")
-                        classObj = mod[1](main=self.base)
+                        classObj = mod[1](utils=self.utils, main=self.base)
                         moduleName = classObj.name
                         if moduleName != ext.classObj.name:
                             self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
@@ -213,7 +214,7 @@ class NatsumeExtMan:
 
 class NatsumeExt:
     aliasBind = dict()
-    def __init__(self, main, utils=utils):
+    def __init__(self, main, utils=utils.NatsumeUtils()):
         self.__VER = 1.0
         self.base = main
         self.utils = utils
