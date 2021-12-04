@@ -1,4 +1,4 @@
-import signal, json, re, time, threading, sys
+import signal, json, re, time, threading, sys, os
 from typing import List
 from colorama import init, Fore, Style
 
@@ -71,8 +71,8 @@ class NatsumeUtils:
         with self.lock: print(f"{self.BLUE}[{mod}] {info}{self.CLR}")
 
     def argsParser(self, args: str) -> List[str]:
-        return re.findall("(?:\".*?[^\\\\]\"|\S)+", args)
-
+        return [x.strip("\"") for x in re.findall("(?:\".*?[^\\\\]\"|\S)+", args)]
+        
     def isDigit(self, args: str) -> bool:
         try:
             int(args)
@@ -80,3 +80,6 @@ class NatsumeUtils:
             return False
         else:
             return True
+
+    def clrscr(self): 
+        os.system("cls")

@@ -9,7 +9,7 @@ class NatsumeAbout(extensions.NatsumeExt):
         self.desc = "Help Function"
         self.alias = ["about", "whoami", "me"]
 
-    def execute(self, args):
+    def execute(self):
         self.process = psutil.Process(os.getpid())
         sys.stdout.write("{}Natsume-chan <version {}>{}\n".format(
             Fore.LIGHTMAGENTA_EX, self.base.VER, Style.RESET_ALL
@@ -29,6 +29,9 @@ class NatsumeAbout(extensions.NatsumeExt):
         ))
         sys.stdout.write("{}Available Commands: {}{}{}\n".format(
             Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, len(self.base.ExtLoader.modules), Style.RESET_ALL
+        ))
+        sys.stdout.write("{}Debugging Status: {}{}{}\n".format(
+            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, self.base.debug, Style.RESET_ALL
         ))
         # for ext in self.base.currMod:
         #     print(ext, self.base.currMod[ext].help)

@@ -9,5 +9,5 @@ class NatsumeExtClearScreen(extensions.NatsumeExt):
         self.help = self.desc
         self.alias = [self.name]
 
-    def execute(self, args):
+    def execute(self):
         os.system("cls")        

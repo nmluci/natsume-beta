@@ -7,28 +7,29 @@ class NatsumePersonaGreets(extensions.NatsumeExt):
         self.alias = [self.name]
         self.isSystem = True
         self.alias = [self.name]
+        self.args = [
+            {
+                "name": "phrase",
+                "default": "list"
+            }
+        ]
         self.run = self.execute
 
-    def execute(self, args):
-        if type(args) == list and len(args) != 0: 
-            args = args[0]
-        else:
-            print("ops")
-            return -1
-        if "list" == args:
-            ctr = 1
+    def execute(self, phrase):
+        currPersona = self.base.currMod["personality"].currPersona
+        if "list" == phrase:
             sys.stdout.write("{}Available Salutes: {}\n".format(self.utils.BLUE, self.utils.CLR))
-            for persona in self.base.currMod["personality"].currPersona.keys():
-                sys.stdout.write("{}[{}] {} {}\n".format(self.utils.XRED, ctr, persona, self.utils.CLR))
-                ctr += 1
-        elif args in self.base.currMod["personality"].currPersona:
+            for persona in currPersona.keys():
+                sys.stdout.write("{}<{:^10}> [natsume] {} {}\n".format(
+                    self.utils.XRED, persona, currPersona[persona], self.utils.CLR))
+        elif phrase in currPersona:
             sys.stdout.write("{}[{}] {}{}\n".format(
                     self.utils.XRED, 
                     "Natsume",
-                    self.base.currMod["personality"].currPersona[args],
+                    self.base.currMod["personality"].currPersona[phrase],
                     self.utils.CLR
                     ))
         else:
-            self.utils.printError("salute", "{} isn't registered!".format(args))
+            self.utils.printError("salute", "{} isn't registered!".format(phrase))
 
 

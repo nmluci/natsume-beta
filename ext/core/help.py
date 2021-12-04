@@ -18,15 +18,9 @@ class NatsumeHelp(extensions.NatsumeExt):
         ]
         self.run = self.altExc
 
-    def beta_execute(self, args):
-        sys.stdout.write("Natsume-chan Help Board!\n\n")
-
-        if len(args) >= 1:
-            for mods in args:
-                if mods in self.base.currMod:
-                    sys.stdout.write("{}<{}>{}\n".format(self.utils.XRED, mods, self.utils.CLR))
-                    if self.base.currMod[mods].help == "": self.base.currMod[mods].help = "No Info!"
-                    sys.stdout.write("\t\"{}\"\n\n".format(self.base.currMod[mods].help))
+    def execute(self, cmdlets):
+        if cmdlets:
+            self.parseCommandInfo(self.base.ExtLoader.getModule(cmdlets))
         else:
             for mods in self.base.currMod:
                 if self.base.currMod[mods].isSystem: continue
@@ -67,4 +61,5 @@ class NatsumeHelp(extensions.NatsumeExt):
         sys.stdout.write("{:>6}Args: {}{}{}\n".format(
             self.utils.BLUE, self.utils.RED, self.parseArgsInfo(cmdlet), self.utils.CLR 
         ))
+
         

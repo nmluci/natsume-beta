@@ -6,25 +6,26 @@ class NatsumeExtReload(extensions.NatsumeExt):
         super().__init__(**kwargs)
         self.name = "reload"
         self.isSystem = True
-        self.alias = [self.name]
+        self.alias = ['r', "reload"]
         self.args = [
             {
-                "name": "modules"
+                "name": "modules",
+                "default": ""
             }
         ]
 
-    def execute(self, args):
-        if args[0] in self.base.currMod:
+    def execute(self, modules):
+        if modules in self.base.currMod:
             try:
-                self.base.ExtLoader.reload(args[0])
+                self.base.ExtLoader.reload(modules)
             except OSError as e:
                 self.utils.printError("Reload", e)
             else:
-                print("Ext. {} Reloaded!".format(args[0]))
-        elif "all" == args[0].lower():
+                print("Ext. {} Reloaded!".format(modules))
+        elif "all" == modules.lower():
             self.base.ExtLoader.reloadAll()
-        elif "config" == args[0].lower():
+        elif "config" == modules.lower():
             self.base.settings = self.utils.getConfig()
             self.base.ExtLoader.reloadAll(self.base.settings["natsume"]["extensions"])
         else:
-            self.utils.printError("Reload", "{} isn't a valid module...".format(args))
+            self.utils.printError("Reload", "{} isn't a valid module...".format(modules))

@@ -33,7 +33,9 @@ class ExtObj:
                 arg["optional"] = False
             if "type" not in arg.keys():
                 arg["type"] = str
-        
+            if "default" not in arg.keys():
+                arg["default"] = ""
+
 class NatsumeExtMan:
     def __init__(self, main, utility: utils.NatsumeUtils, moduleList: List = []):
         self.__VER = 1.0
@@ -43,7 +45,7 @@ class NatsumeExtMan:
         self.settings = self.utils.getConfig()
         self.moduleList = self.settings["natsume"]["extensions"]
         self.modules : Dict[str, ExtObj] = dict()
-        self.extRef  : Dict[str, ExtObj.classObj] = dict() # Alias, Class
+        self.extRef  : Dict[str, ExtObj.classObj] = dict() 
         self.base = main
 
     def execute(self, ext, args: list):
@@ -66,8 +68,6 @@ class NatsumeExtMan:
         except KeyError:
             self.utils.printError("Execute", f"{ext} isn't a valid alias")
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("Execute", f"{e}")
     
     def getCurrentModules(self, alias: str=None):
@@ -116,8 +116,6 @@ class NatsumeExtMan:
                             raise AttributeError(f"Conflicting Aliases Found! {alias}")
 
         except Exception as e:
-            # import traceback
-            # traceback.print_exc()
             self.utils.printError("ExtLoader", e)
         else:
             self.modules = newExtObj
@@ -161,8 +159,6 @@ class NatsumeExtMan:
                     self.utils.printInfo("ExtLoader", f"{moduleName}, {fullModule}")
 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("ExtLoader", e)
         finally:
             for cmd, mod in self.extRef.items():
@@ -204,8 +200,6 @@ class NatsumeExtMan:
                 
                 self.utils.printInfo("ExtReload", f"Reloaded {moduleName}")
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             self.utils.printError("ExtReload", e)
         else:
             self.modules = newExtDict
@@ -221,6 +215,7 @@ class NatsumeExt:
         self.name = "NatsumeBaseExtensions"
         self.args : list[dict] = None
         self.help =  "Wha! Nothing to see here!"
+        self.group = "Misc"
         self.desc = self.help
         self.alias = [self.name]
         self.isSystem = False

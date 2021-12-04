@@ -7,7 +7,7 @@ class NatsumeOwner(extensions.NatsumeExt):
         self.__Ver = "1.0"
         self.alias = [self.name]
 
-    def execute(self, args):
+    def execute(self):
         print("Current Loaded Modules")
         print("Non-Critical")
         for mod in self.base.currMod:

@@ -24,22 +24,10 @@ class NatsumeDivineObj(extensions.NatsumeExt):
         self.hentai = Hentai()
         self.dler = ExtDownloader()
         
-    def execute(self, args: List[str]):
+    def execute(self, id):
         try:
-            if len(args) == 1:
-                if self.utils.isDigit(args[0]):
-                    book = self.hentai.getDoujin(int(args[0]))
-                    self.printDoujinInfo(book)
-                elif args[0] == "random" or args[0] == "rand":
-                    book = self.hentai.random()
-                    self.printDoujinInfo(book)
-                elif args[0] == "help":
-                    self.helpMenu()
-                else:
-                    return super().execute(args)
-            elif args[0].lower() == "search": self.searchDoujin(args)
-            else:
-                super().execute()
+            book = self.hentai.getDoujin(id)
+            self.printDoujinInfo(book)
         except Exception as e:
             self.utils.printError("nh", f"An Error Occured: {e}")
 
