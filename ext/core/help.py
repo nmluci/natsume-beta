@@ -8,12 +8,14 @@ class NatsumeHelp(extensions.NatsumeExt):
         self.alias = ["h", "help"]
         self.desc = "Shows Help"
         self.help = "This is HELP!"
-        self.args = {
-            "cmdlets": {
+        self.args = [
+            {
+                "name": "name",
                 "desc": "Command name",
                 "optional": True
             }
-        }
+
+        ]
         self.run = self.altExc
 
     def beta_execute(self, args):
@@ -37,21 +39,30 @@ class NatsumeHelp(extensions.NatsumeExt):
         self.altExc(args) if "alt" in args else self.beta_execute(args)
 
     def altExc(self, args):
-        for name, ext in self.base.ExtLoader.getCurrentModules():
-            self.parseCommandInfo(ext)
-
+        if not args:
+            for name, ext in self.base.ExtLoader.getCurrentModules():
+                self.parseCommandInfo(ext.classObj)
+        else:
+            self.parseCommandInfo(self.base.ExtLoader.getCurrentModules(args[0]))
     def parseArgsInfo(self, cmdlet:extensions.ExtObj):
-        return ", ".join(list(x for x in cmdlet.classObj.args))
+        if not cmdlet.args:
+            return None
+        else:
+            argList = list()
+            for cmd in cmdlet.args:
+                argList += [f"{self.utils.XRED if not cmd['optional'] else self.utils.BLUE}{cmd['name']}{self.utils.CLR}"]
 
-    def parseCommandInfo(self, cmdlet: extensions.ExtObj):
+            return ", ".join(argList)
+
+    def parseCommandInfo(self, cmdlet: extensions.ExtObj.classObj):
         sys.stdout.write("{:>3}<{}>{}\n".format(
-            self.utils.XBLUE, cmdlet.classObj.name, self.utils.CLR
+            self.utils.XBLUE, cmdlet.name, self.utils.CLR
         ))
         sys.stdout.write("{:>6}Aliases: {}{}{}\n".format(
             self.utils.BLUE, self.utils.RED, ", ".join(cmdlet.alias), self.utils.CLR 
         ))
         sys.stdout.write("{:>6}Description: {}{}{}\n".format(
-            self.utils.BLUE, self.utils.RED, cmdlet.classObj.desc, self.utils.CLR 
+            self.utils.BLUE, self.utils.RED, cmdlet.desc, self.utils.CLR 
         ))
         sys.stdout.write("{:>6}Args: {}{}{}\n".format(
             self.utils.BLUE, self.utils.RED, self.parseArgsInfo(cmdlet), self.utils.CLR 
