@@ -12,6 +12,7 @@ class NatsumeHelp(extensions.NatsumeExt):
             {
                 "name": "name",
                 "desc": "Command name",
+                "default": "all",
                 "optional": True
             }
 
@@ -32,12 +33,12 @@ class NatsumeHelp(extensions.NatsumeExt):
     def execute(self, args):
         self.altExc(args) if "alt" in args else self.beta_execute(args)
 
-    def altExc(self, args):
+    def altExc(self, **args):
         if not args:
             for name, ext in self.base.ExtLoader.getCurrentModules():
                 self.parseCommandInfo(ext.classObj)
         else:
-            self.parseCommandInfo(self.base.ExtLoader.getCurrentModules(args[0]))
+            self.parseCommandInfo(self.base.ExtLoader.getCurrentModules(args['name']))
     def parseArgsInfo(self, cmdlet:extensions.ExtObj):
         if not cmdlet.args:
             return None

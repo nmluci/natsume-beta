@@ -10,7 +10,7 @@ class NatsumePersonaGreets(extensions.NatsumeExt):
         self.args = [
             {
                 "name": "phrase",
-                "default": "list"
+                "optional": True
             }
         ]
         self.run = self.execute
@@ -30,6 +30,6 @@ class NatsumePersonaGreets(extensions.NatsumeExt):
                     self.utils.CLR
                     ))
         else:
-            self.utils.printError("salute", "{} isn't registered!".format(phrase))
+            if phrase: self.utils.printError("salute", "{} isn't registered!".format(phrase))
 
 

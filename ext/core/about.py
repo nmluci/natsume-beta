@@ -12,28 +12,28 @@ class NatsumeAbout(extensions.NatsumeExt):
     def execute(self):
         self.process = psutil.Process(os.getpid())
         sys.stdout.write("{}Natsume-chan <version {}>{}\n".format(
-            Fore.LIGHTMAGENTA_EX, self.base.VER, Style.RESET_ALL
+            self.utils.XRED, self.base.VER, self.utils.CLR
         ))
         sys.stdout.write("{}Python Version: {}{}.{}{}\n".format(
-            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, 
-            sys.version_info.major, sys.version_info.minor, Style.RESET_ALL
+            self.utils.XRED, self.utils.XCYAN, 
+            sys.version_info.major, sys.version_info.minor, self.utils.CLR
         ))
         sys.stdout.write("{}Memory Usage: {}{:.2f} MB {}\n".format(
-            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, self.process.memory_info().rss/2**20, Style.RESET_ALL
+            self.utils.XRED, self.utils.XCYAN, self.process.memory_info().rss/2**20, self.utils.CLR
         ))
         sys.stdout.write("{}Uptime: {}{}{}\n".format(
-            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, self.base.utils.getUptime(), Style.RESET_ALL
+            self.utils.XRED, self.utils.XCYAN, self.base.utils.getUptime(), self.utils.CLR
         ))
         sys.stdout.write("{}Uptime (Since last reload): {}{}{}\n".format(
-            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, self.utils.getUptime(), Style.RESET_ALL
+            self.utils.XRED, self.utils.XCYAN, self.utils.getUptime(), self.utils.CLR
         ))
         sys.stdout.write("{}Available Commands: {}{}{}\n".format(
-            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, len(self.base.ExtLoader.modules), Style.RESET_ALL
+            self.utils.XRED, self.utils.XCYAN, len(self.base.ExtLoader.modules), self.utils.CLR
         ))
         sys.stdout.write("{}Debugging Status: {}{}{}\n".format(
-            Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, self.base.debug, Style.RESET_ALL
+            self.utils.XRED, self.utils.XCYAN, self.base.debug, self.utils.CLR
         ))
         # for ext in self.base.currMod:
         #     print(ext, self.base.currMod[ext].help)
 
-        print("By Cxizaki <{}winterspiritze{}@outlook.com{}>".format(Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX, Fore.RESET))
+        print("By Cxizaki <{}winterspiritze{}@outlook.com{}>".format(self.utils.XRED, self.utils.XCYAN, self.utils.CLR))

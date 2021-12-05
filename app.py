@@ -1,21 +1,22 @@
 from structure import utils
 from structure import extensions
 class NatsumeApp:
-    def __init__(self):
+    def __init__(self, debug=False):
         self.VER = 0.3
+        self.debug = debug
         self.isExit = False
         self.currMod = dict()
         self.currCmd = ""
         self.utils = utils.NatsumeUtils()
         self.ExtLoader = extensions.NatsumeExtMan(self, self.utils)
-        self.currMod= self.ExtLoader.loadAll()
-        self.currMod['salute'].execute(["startup"])
-
+        self.currMod = self.ExtLoader.loadAll()
+        self.currMod['salute'].execute("startup")
+        
     def argParser(self, args: str):
         try:
             if args == "": return self.utils.printError("app", "What's your command?")
-            args = self.utils.argsParser(args)
-            self.ExtLoader.execute(args[0], args[1:])
+            cmdlet, argMap = self.utils.argsParser(args)
+            self.ExtLoader.execute(cmdlet, argMap)
         except Exception as e:
             self.utils.printError("Main", e)
             
@@ -27,7 +28,7 @@ class NatsumeApp:
         
 if __name__ == "__main__":
     import sys
-    app = NatsumeApp()
+    app = NatsumeApp("--debug" in sys.argv)
     if "--colorless" in sys.argv:
         sys.stdout.write("[ConfigLoader] Executing in B/W Mode...\n")
     app.main()

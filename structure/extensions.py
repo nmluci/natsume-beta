@@ -48,28 +48,49 @@ class NatsumeExtMan:
         self.extRef  : Dict[str, ExtObj.classObj] = dict() 
         self.base = main
 
-    def execute(self, ext, args: list):
+    def execute(self, ext, args):
         try:
-            ext = self.extRef[ext]
-            minimumArgs = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
-            
-            if not minimumArgs:
-                ext.run(args if args else None)
+            ext : ExtObj.classObj = self.extRef[ext]
+            minimumArgs : List[Dict] = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
+            # No Argument needed
+            if minimumArgs == None:
+                self.utils.printInfo("Execute", "No argument detected")
+                args = None
             else:
-                if len(minimumArgs) != len(args):
-                    for arg in minimumArgs:
-                        if arg["optional"]: continue
+                for arg in minimumArgs:
+                    attempt = 1
+                    if arg["name"] in args: continue
+                    
+                    for i in range(3):
                         temp = input(f"{arg['name']}: ")
-                        if "cancel" in temp.lower(): raise ValueError("Action canceled")
-                        args.append(temp)
+                        if not temp and attempt <= 3: 
+                            if arg["optional"]: 
+                                temp = arg.get('default', None)
+                                break
+                            elif attempt != 3:
+                                attempt += 1
+                                continue
+                            else:
+                                raise ValueError(f"{arg['name']} can't be empty")
+                        
+                        if "cancel" in temp.lower(): 
+                            raise Exception("Action canceled")
 
-                ext.run(args)
-        
-        except KeyError:
-            self.utils.printError("Execute", f"{ext} isn't a valid alias")
+                        args[arg['name']] = temp
+                        break
+                                    
         except Exception as e:
             self.utils.printError("Execute", f"{e}")
-    
+        except KeyError:
+            self.utils.printError("Execute", f"{ext} isn't a valid alias")
+        except ValueError as e:
+            self.utils.printError("Execute", f"{e}")
+        else:
+            if args:
+                ext.run(**args)
+            else:
+                ext.run()
+
     def getCurrentModules(self, alias: str=None):
         if self.__loadedExt:
             self.utils.printError("getCurrentModules", "No modules has been loaded!")
