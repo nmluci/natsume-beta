@@ -54,11 +54,11 @@ class NatsumeExtMan:
             minimumArgs : List[Dict] = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
             
             # No Argument needed
-            if minimumArgs == None:
+            if (not minimumArgs) and (not args):
                 self.utils.printInfo("Execute", "No argument detected")
                 args = None
             else:
-                for seq, arg in enumerate(minimumArgs):
+                for seq, arg in enumerate(ext.args):
                     attempt = 1
                     if arg["name"] in args:
                         continue

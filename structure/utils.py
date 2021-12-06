@@ -104,3 +104,7 @@ class NatsumeUtils:
 
     def clrscr(self): 
         os.system("cls")
+
+    def traceError(self):
+        import traceback
+        traceback.print_exc()
