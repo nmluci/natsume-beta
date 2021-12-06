@@ -1,6 +1,14 @@
 import signal, json, re, time, threading, sys, os
+from dataclasses import dataclass
 from typing import List, Dict, Tuple
 from colorama import init, Fore, Style
+
+@dataclass
+class Args:
+    ext: str
+    args: Dict or List
+    argType: type = dict
+
 
 class NatsumeUtils:
     def __init__(self, cli=True):
@@ -83,8 +91,12 @@ class NatsumeUtils:
         if (len(arg) == 2) and str(arg[1].strip("-")).lower() == 'help':
             return "help", {'name': title}
 
-        for i in range(1, len(arg)-1, 2):
-            argMap[arg[i].strip("-")] = arg[i+1]
+        for i in range(1, len(arg), 2):
+            if '-' in arg[i]:
+                argMap[arg[i].strip("-")] = arg[i+1]
+            else:
+                argMap[f"args_{len(argMap)+1}"] = arg[i]
+        print(argMap)
         return title, argMap 
         
     def isDigit(self, args: str) -> bool:

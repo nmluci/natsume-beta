@@ -52,15 +52,21 @@ class NatsumeExtMan:
         try:
             ext : ExtObj.classObj = self.extRef[ext]
             minimumArgs : List[Dict] = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
+            
             # No Argument needed
             if minimumArgs == None:
                 self.utils.printInfo("Execute", "No argument detected")
                 args = None
             else:
-                for arg in minimumArgs:
+                for seq, arg in enumerate(minimumArgs):
                     attempt = 1
-                    if arg["name"] in args: continue
-                    
+                    if arg["name"] in args:
+                        continue
+                    if f'args_{seq+1}' in args:
+                        args[arg['name']] = args[f'args_{seq+1}']
+                        args.pop(f'args_{seq+1}')  
+                        continue
+
                     for i in range(3):
                         temp = input(f"{arg['name']}: ")
                         if not temp and attempt <= 3: 
