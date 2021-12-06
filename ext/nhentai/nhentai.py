@@ -18,16 +18,24 @@ class NatsumeDivineObj(extensions.NatsumeExt):
                 "name": "id",
                 "type": str,
                 "desc": "BookID"
+            }, 
+            {
+                "name": "isDownload",
+                "type": str,
+                "desc": "download?",
+                "default": "no",
+                "optional": True
             }
         ]
         self.isSystem = False
         self.hentai = Hentai()
         self.dler = ExtDownloader()
         
-    def execute(self, id):
+    def execute(self, id, isDownload):
         try:
+            
             book = self.hentai.getDoujin(id)
-            self.printDoujinInfo(book)
+            self.printDoujinInfo(book, True if isDownload.lower() == "yes" else False)
         except Exception as e:
             self.utils.printError("nh", f"An Error Occured: {e}")
 
@@ -42,7 +50,7 @@ class NatsumeDivineObj(extensions.NatsumeExt):
             print("{}({}) [{}] {}{}"
                 .format(self.utils.BLUE, num, book.id, book.title.pretty, self.utils.CLR))
 
-    def printDoujinInfo(self, doujin: Book):
+    def printDoujinInfo(self, doujin: Book, dlconfirm: str):
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "ID", doujin.id, self.utils.CLR))
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Title", doujin.title.pretty, self.utils.CLR))
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Character", doujin.character, self.utils.CLR))
@@ -50,8 +58,7 @@ class NatsumeDivineObj(extensions.NatsumeExt):
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Tags", doujin.tags, self.utils.CLR))
         print("{}{:<10}: {}{}".format(self.utils.BLUE, "Lang", doujin.lang, self.utils.CLR))
 
-        dlconfirm = input("Download? ")
-        if "yes" == dlconfirm:
+        if dlconfirm:
             try:
                 nukecode = doujin.id
             except IndexError:

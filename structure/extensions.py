@@ -71,7 +71,7 @@ class NatsumeExtMan:
                         temp = input(f"{arg['name']}: ")
                         if not temp and attempt <= 3: 
                             if arg["optional"]: 
-                                temp = arg.get('default', None)
+                                args[arg['name']] = arg.get('default', None)
                                 break
                             elif attempt != 3:
                                 attempt += 1
