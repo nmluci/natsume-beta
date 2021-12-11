@@ -12,7 +12,7 @@ class NatsumeHelp(extensions.NatsumeExt):
             {
                 "name": "name",
                 "desc": "Command name",
-                "default": "all",
+                "default": None,
                 "optional": True
             }
 

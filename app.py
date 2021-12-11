@@ -1,5 +1,5 @@
-from structure import utils
-from structure import extensions
+from inspect import Traceback
+from structure import utils, extensions
 class NatsumeApp:
     def __init__(self, debug=False):
         self.VER = 0.3

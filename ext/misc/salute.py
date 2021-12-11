@@ -10,7 +10,8 @@ class NatsumePersonaGreets(extensions.NatsumeExt):
         self.args = [
             {
                 "name": "phrase",
-                "optional": True
+                "optional": True,
+                "default": "failed"
             }
         ]
         self.run = self.execute
