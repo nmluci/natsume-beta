@@ -87,9 +87,15 @@ class NatsumeUtils:
         argMap = dict()
         title = arg[0]
 
-        for i in range(1, len(arg), 2):
+        skip = False
+        for i in range(1, len(arg)):
+            if skip:
+                skip = False
+                continue
+
             if '-' in arg[i]:
                 argMap[arg[i].strip("-")] = arg[i+1]
+                skip = True
             else:
                 argMap[f"args_{len(argMap)+1}"] = arg[i]
         return title, argMap 
@@ -101,6 +107,8 @@ class NatsumeUtils:
             return False
         else:
             return True
+    def parseBool(self, val) -> bool:
+        return True if str(val).lower() in ['yes', 'true', '1'] else False
 
     def clrscr(self): 
         os.system("cls")

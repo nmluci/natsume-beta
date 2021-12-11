@@ -52,28 +52,44 @@ class NatsumeExtMan:
         try:
             ext : ExtObj.classObj = self.extRef[ext]
             minimumArgs : List[Dict] = list(arg for arg in ext.args if not arg["optional"]) if ext.args else None
-            
+            optionalArgs: List[Dict] = list(arg for arg in ext.args if arg["optional"]) if ext.args else None
             # No Argument needed
             if (not minimumArgs) and (not args):
                 self.utils.printInfo("Execute", "No argument detected")
-                args = None
+                if not optionalArgs:
+                    args = None
+                else:
+                    for arg in optionalArgs:
+                        args[arg["name"]] = arg["default"]
             else:
                 for seq, arg in enumerate(ext.args):
                     attempt = 1
+
+                    # parse argument passed by keywords
                     if arg["name"] in args:
+                        if arg['type'] == bool:
+                            args[arg['name']] = self.utils.parseBool(args[arg["name"]])
+                        else:
+                            args[arg['name']] = arg['type'](args[arg["name"]])
                         continue
+                    
+                    # parse argument passed by value
                     if f'args_{seq+1}' in args:
-                        args[arg['name']] = args[f'args_{seq+1}']
+                        if arg['type'] == bool:
+                            args[arg['name']] = self.utils.parseBool(args[f'args_{seq+1}'])
+                        else:
+                            args[arg['name']] = arg['type'](args[f'args_{seq+1}'])
                         args.pop(f'args_{seq+1}')  
                         continue
 
-                    for i in range(3):
+                    if arg["optional"]: 
+                        args[arg['name']] = arg.get('default', None)
+                        continue
+
+                    for i in range(2):
                         temp = input(f"{arg['name']}: ")
                         if not temp and attempt <= 3: 
-                            if arg["optional"]: 
-                                args[arg['name']] = arg.get('default', None)
-                                break
-                            elif attempt != 3:
+                            if attempt != 3:
                                 attempt += 1
                                 continue
                             else:
