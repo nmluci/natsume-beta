@@ -1,4 +1,3 @@
-from colorama import Fore, init, Style
 from structure import extensions
 import sys, os, psutil
 

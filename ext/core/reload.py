@@ -18,7 +18,7 @@ class NatsumeExtReload(extensions.NatsumeExt):
         if modules in self.base.currMod:
             try:
                 self.base.ExtLoader.reload(modules)
-            except OSError as e:
+            except Exception as e:
                 self.utils.printError("Reload", e)
             else:
                 print("Ext. {} Reloaded!".format(modules))
