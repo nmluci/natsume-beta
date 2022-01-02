@@ -1,5 +1,5 @@
 from inspect import Traceback
-from structure import utils, extensions
+from structure import utils, extensions, database
 class NatsumeApp:
     def __init__(self, debug=False):
         self.VER = 0.3
@@ -8,7 +8,8 @@ class NatsumeApp:
         self.currMod = dict()
         self.currCmd = ""
         self.utils = utils.NatsumeUtils()
-        self.ExtLoader = extensions.NatsumeExtMan(self, self.utils)
+        self.database = database.NatsumeDatabase()
+        self.ExtLoader = extensions.NatsumeExtMan(self, self.utils, self.database)
         self.currMod = self.ExtLoader.loadAll()
         self.currMod['salute'].execute("startup")
         
@@ -22,7 +23,9 @@ class NatsumeApp:
             
     def main(self):
         isExit = False
-        
+        if self.debug:
+            self.database.create_db()
+
         while (not isExit):
             self.argParser(str(input("natsume > ")))
         

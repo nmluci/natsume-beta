@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import importlib, sys, inspect
 
-from . import utils
+from . import utils, database
 
 @dataclass
 class ExtObj:
@@ -37,11 +37,12 @@ class ExtObj:
                 arg["default"] = ""
 
 class NatsumeExtMan:
-    def __init__(self, main, utility: utils.NatsumeUtils, moduleList: List = []):
+    def __init__(self, main, utility: utils.NatsumeUtils, database: database.NatsumeDatabase, moduleList: List = []):
         self.__VER = 1.0
         self.__loadedExt = 0
         self.__extFolder = "ext"
         self.utils: utils.NatsumeUtils = utility
+        self.database: database.NatsumeDatabase = database
         self.settings = self.utils.getConfig()
         self.moduleList = self.settings["natsume"]["extensions"]
         self.modules : Dict[str, ExtObj] = dict()
@@ -133,7 +134,7 @@ class NatsumeExtMan:
                     for mod in inspect.getmembers(newModule, inspect.isclass):
                         if issubclass(mod[1], NatsumeExt):
                             self.utils.printInfo("ExtReload", f"Reloaded {mod[1]}")
-                            classObj = mod[1](utils=self.utils, main=self.base)
+                            classObj = mod[1](utils=self.utils, main=self.base, db=self.database)
                             moduleName = classObj.name
                             if moduleName != extObj.classObj.name:
                                 self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
@@ -171,9 +172,8 @@ class NatsumeExtMan:
         
         try:
             for module in self.moduleList:
-                for submodule in filter(lambda x: ("__" not in x.name) and (".py" == x.suffix), 
+                for submodule in filter(lambda x: (not x.name.endswith("_database.py")) and ("__" not in x.name) and (".py" == x.suffix), 
                                         list(Path(self.__extFolder, module).glob("*"))):
-                    
                     pkgName = f"{self.__extFolder}.{module}"
                     fullModule = str(submodule).replace("\\", ".").split(".py")[0]
                     moduleObj = importlib.import_module(fullModule, pkgName)
@@ -181,7 +181,7 @@ class NatsumeExtMan:
                     for mod in inspect.getmembers(moduleObj, inspect.isclass):
                         if issubclass(mod[1], NatsumeExt):
                             self.utils.printInfo("ExtLoader", f"Found {mod[1]}")
-                            classObj = mod[1](utils=self.utils, main=self.base)
+                            classObj = mod[1](utils=self.utils, main=self.base, db=self.database)
                             moduleName = classObj.name
                         else:
                             self.utils.printError("ExtLoader", F"Found {mod[1]}")
@@ -220,11 +220,10 @@ class NatsumeExtMan:
                 for mod in inspect.getmembers(moduleObj, inspect.isclass):
                     if issubclass(mod[1], NatsumeExt):
                         self.utils.printInfo("ExtReload", f"Found {mod[1]}")
-                        classObj = mod[1](utils=self.utils, main=self.base)
+                        classObj = mod[1](utils=self.utils, main=self.base, db=self.database)
                         moduleName = classObj.name
                         if moduleName != ext.classObj.name:
                             self.utils.printInfo("ExtReload", f"Module's name has changed: {ext.classObj.name}->{moduleName}")
-
 
                 ExtObj.validateArgs(classObj)
                 newAlias = list(filter(lambda x: x not in ext.alias, classObj.alias))
@@ -251,10 +250,11 @@ class NatsumeExtMan:
 
 class NatsumeExt:
     aliasBind = dict()
-    def __init__(self, main, utils=utils.NatsumeUtils()):
+    def __init__(self, main, utils:utils.NatsumeUtils, db:database.NatsumeDatabase):
         self.__VER = 1.0
         self.base = main
         self.utils = utils
+        self.session = db.session
         self.name = "NatsumeBaseExtensions"
         self.args : list[dict] = None
         self.help =  "Wha! Nothing to see here!"
@@ -266,5 +266,8 @@ class NatsumeExt:
 
     def execute(self, args):
         return print("Whoa, Unimplemented Feature Here! Nice nice.... now.. GET BACK TO WORK!")
+
+    def __repr__(self):
+        return f"<natsume.ext '{self.name}'>"
 
         
