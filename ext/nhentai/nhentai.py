@@ -52,9 +52,10 @@ class NatsumeDivineObj(extensions.NatsumeExt):
                 if not session.query(HentaiTagType).filter(HentaiTagType.id==tag.id).first():
                     newTag = HentaiTagType(id=tag.id, name=tag.name)
                     session.add(newTag)
-
-                newBookTag = HentaiTag(book_id=doujin.id, type_id=tag.id)
-                session.add(newBookTag)
+                    
+                if not session.query(HentaiTag).filter((HentaiTag.id==tag.id) & (HentaiTag.book_id==doujin.id)):
+                    newBookTag = HentaiTag(book_id=doujin.id, type_id=tag.id)
+                    session.add(newBookTag)
             
             approxTitleId = session.query(HentaiTitle).order_by(HentaiTitle.id.desc()).first()
 
