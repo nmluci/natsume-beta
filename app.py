@@ -7,6 +7,7 @@ class NatsumeApp:
         self.isExit = False
         self.currMod = dict()
         self.currCmd = ""
+        self.cache = dict()
         self.utils = utils.NatsumeUtils()
         self.database = database.NatsumeDatabase()
         self.ExtLoader = extensions.NatsumeExtMan(self, self.utils, self.database)

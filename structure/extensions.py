@@ -87,20 +87,21 @@ class NatsumeExtMan:
                         args[arg['name']] = arg.get('default', None)
                         continue
 
-                    for i in range(2):
+                    for i in range(3):
                         temp = input(f"{arg['name']}: ")
-                        if not temp and attempt <= 3: 
+                        if (not temp) and attempt <= 3: 
                             if attempt != 3:
                                 attempt += 1
                                 continue
                             else:
-                                raise ValueError(f"{arg['name']} can't be empty")
+                                if not arg["default"]:
+                                    raise ValueError(f"{arg['name']} can't be empty")
                         
                         if "cancel" in temp.lower(): 
                             raise Exception("Action canceled")
-
-                        args[arg['name']] = temp
-                        break
+                        if arg['default'] and (not temp):
+                            args[arg['name']] = arg.get('default')
+                            break
                                     
         except Exception as e:
             self.utils.printError("Execute", f"{e}")
@@ -264,7 +265,7 @@ class NatsumeExt:
         self.isSystem = False
         self.run = self.execute
 
-    def execute(self, args):
+    def execute(self, args=None):
         return print("Whoa, Unimplemented Feature Here! Nice nice.... now.. GET BACK TO WORK!")
 
     def __repr__(self):
