@@ -14,11 +14,13 @@ class NatsumeRedditDownloader(extensions.NatsumeExt):
             {
                 "name": "sum",
                 "type": int,
+                "optional": True,
                 "default": 5
             },
             {
                 "name": "download",
                 "type": bool,
+                "optional": True,
                 "default": False 
             }
         ]
@@ -26,10 +28,10 @@ class NatsumeRedditDownloader(extensions.NatsumeExt):
         self.isSystem = False
         self.reddit = NatsumeRedditAPI()
         self.download = ExtDownloader()
-        
+
     def execute(self, subreddit, sum, download):
         try:
-           urls = self.reddit.getPosts(subreddit, sum)
-           if download: self.download.downloader(urls, "reddit")
+            urls = self.reddit.getPosts(subreddit, sum)
+            if download: self.download.downloader(urls, "reddit")
         except Exception as e:
             self.utils.printError("Reddit Downloader", e)

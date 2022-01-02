@@ -15,7 +15,7 @@ class NatsumeRedditAPI():
                             )
         self.cache = dict(list())
         self.defaultDir = os.path.join("cache", "reddit.json")
-
+        
     def getSubredditData(self, subreddit, num):
         if not num: 
             num = "15"
