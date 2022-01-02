@@ -58,16 +58,17 @@ class NatsumeDivineObj(extensions.NatsumeExt):
             
             approxTitleId = session.query(HentaiTitle).order_by(HentaiTitle.id.desc()).first()
 
-            newBook = HentaiBook(id=doujin.id, 
-                                title_id=approxTitleId.id, 
-                                thumbnail=doujin.thumbnail, 
-                                cover=doujin.cover, 
-                                scanlator=doujin.scanlator,
-                                upload_date=datetime.fromtimestamp(doujin.epoch),
-                                epoch_time=doujin.epoch,
-                                language=doujin.lang,
-                                num_page=doujin.num_pages)
-            session.add(newBook)
+            if not session.query(HentaiBook).filter(HentaiBook.id==doujin.id):
+                newBook = HentaiBook(id=doujin.id, 
+                                    title_id=approxTitleId.id, 
+                                    thumbnail=doujin.thumbnail, 
+                                    cover=doujin.cover, 
+                                    scanlator=doujin.scanlator,
+                                    upload_date=datetime.fromtimestamp(doujin.epoch),
+                                    epoch_time=doujin.epoch,
+                                    language=doujin.lang,
+                                    num_page=doujin.num_pages)
+                session.add(newBook)
         except Exception as e:
             self.utils.printError("nh-importer", f"An Database Error Occured: {e}")
             self.utils.printInfo('nh-importer', "rolling back changes")

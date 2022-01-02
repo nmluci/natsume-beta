@@ -9,10 +9,17 @@ class HentaiTitle(BaseModel):
     jp = Column(Text, nullable=False)
     pretty = Column(Text, nullable=False)
 
+class HentaiSeries(BaseModel):
+    __tablename__ = "HentaiSeries"
+
+    id = Column(Integer, primary_key=True)
+    series_name = Column(Text, nullable=False)
+
 class HentaiBook(BaseModel):
     __tablename__ = "HentaiBook"
 
     id = Column(Integer, primary_key=True)
+    series_id = Column(Integer, ForeignKey(HentaiSeries.id, ondelete="SET NULL", onupdate="CASCADE"))
     title_id = Column(Integer, ForeignKey(HentaiTitle.id, ondelete="SET NULL", onupdate="CASCADE"))
     thumbnail = Column(Text, nullable=False)
     cover = Column(Text, nullable=False)
@@ -34,4 +41,3 @@ class HentaiTag(BaseModel):
     id = Column(Integer, primary_key=True)
     book_id = Column(Integer, ForeignKey(HentaiBook.id, ondelete="SET NULL", onupdate="CASCADE"))
     type_id = Column(Integer, ForeignKey(HentaiTagType.id, ondelete="SET NULL", onupdate="CASCADE"))
-    
