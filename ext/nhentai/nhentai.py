@@ -1,10 +1,12 @@
 from __future__ import annotations
 from typing import List
+from datetime import datetime
+
+from ext.nhentai.nhentai_database import HentaiBook, HentaiTag, HentaiTitle, HentaiTagType
 
 from structure import extensions
-from structure.nhentaiAPI import Book, Hentai, TagOption, Page, Tag, Sort
+from structure.nhentaiAPI import Book, Hentai
 from structure.download import ExtDownloader
-import sys
 
 class NatsumeDivineObj(extensions.NatsumeExt):
     def __init__(self, **kwargs):
@@ -33,12 +35,48 @@ class NatsumeDivineObj(extensions.NatsumeExt):
         
     def execute(self, id, isDownload):
         try:
-            
             book = self.hentai.getDoujin(id)
+            self.importDoujin(book)
             self.printDoujinInfo(book, True if isDownload.lower() == "yes" else False)
         except Exception as e:
             self.utils.printError("nh", f"An Error Occured: {e}")
 
+    def importDoujin(self, doujin: Book):
+        try:
+            session = self.session()
+            rawTag =  doujin.rawTag
+
+            title = HentaiTitle(eng=doujin.title.eng, jp=doujin.title.jp, pretty=doujin.title.pretty)
+            session.add(title)
+            for tag in filter(lambda t: (t.type=="tag"), rawTag):
+                if not session.query(HentaiTagType).filter(HentaiTagType.id==tag.id).first():
+                    newTag = HentaiTagType(id=tag.id, name=tag.name)
+                    session.add(newTag)
+
+                newBookTag = HentaiTag(book_id=doujin.id, type_id=tag.id)
+                session.add(newBookTag)
+            
+            approxTitleId = session.query(HentaiTitle).order_by(HentaiTitle.id.desc()).first()
+
+            newBook = HentaiBook(id=doujin.id, 
+                                title_id=approxTitleId.id, 
+                                thumbnail=doujin.thumbnail, 
+                                cover=doujin.cover, 
+                                scanlator=doujin.scanlator,
+                                upload_date=datetime.fromtimestamp(doujin.epoch),
+                                epoch_time=doujin.epoch,
+                                language=doujin.lang,
+                                num_page=doujin.num_pages)
+            session.add(newBook)
+        except Exception as e:
+            self.utils.printError("nh-importer", f"An Database Error Occured: {e}")
+            self.utils.printInfo('nh-importer', "rolling back changes")
+            session.rollback()
+        else:
+            session.commit()
+        finally:
+            session.close()
+            
     def downloadDoujin(self, doujin: Book):
         urlList = list()
         for page in doujin.pages:
