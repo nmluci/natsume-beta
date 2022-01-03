@@ -1,4 +1,7 @@
+import betterproto
 from structure import extensions
+from ext.filehandling.ext.tachiyomi.compiled import TachiyomiBackup
+
 from pathlib import Path
 import json
 
@@ -35,6 +38,15 @@ class NatsumeFileOpen(extensions.NatsumeExt):
             data = json.loads(open(file, "r", encoding='UTF-8').read())
         elif filetype == "text":
             data = open(file, "r", encoding='UTF-8').read()
+        elif filetype == "manga_backup":
+            bp = TachiyomiBackup.Backup()
+            
+            data = bp.FromString(open(file, "rb").read())
+            data = {
+                "doujin": list(x for x in filter(lambda x: x.source == 3122156392225024195, data.backup_manga)),
+                "manga": list(x for x in filter(lambda x: x.source != 3122156392225024195, data.backup_manga))
+            }
+            env = "mangaBackup"
         else:
             self.utils.printError("openfile", "this feature not yet implemented")
             return
@@ -43,4 +55,3 @@ class NatsumeFileOpen(extensions.NatsumeExt):
             "data": data,
             "form": env
         }
-        print(json.dumps(self.base.cache, indent=3))

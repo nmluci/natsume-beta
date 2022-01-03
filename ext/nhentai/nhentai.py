@@ -46,20 +46,21 @@ class NatsumeDivineObj(extensions.NatsumeExt):
             session = self.session()
             rawTag =  doujin.rawTag
 
-            title = HentaiTitle(eng=doujin.title.eng, jp=doujin.title.jp, pretty=doujin.title.pretty)
-            session.add(title)
             for tag in filter(lambda t: (t.type=="tag"), rawTag):
                 if not session.query(HentaiTagType).filter(HentaiTagType.id==tag.id).first():
                     newTag = HentaiTagType(id=tag.id, name=tag.name)
                     session.add(newTag)
                     
-                if not session.query(HentaiTag).filter((HentaiTag.id==tag.id) & (HentaiTag.book_id==doujin.id)):
+                if not session.query(HentaiTag).filter((HentaiTag.type_id==tag.id) & (HentaiTag.book_id==doujin.id)).first():
                     newBookTag = HentaiTag(book_id=doujin.id, type_id=tag.id)
                     session.add(newBookTag)
             
-            approxTitleId = session.query(HentaiTitle).order_by(HentaiTitle.id.desc()).first()
 
-            if not session.query(HentaiBook).filter(HentaiBook.id==doujin.id):
+            if not session.query(HentaiBook).filter(HentaiBook.id==doujin.id).first():
+                title = HentaiTitle(eng=doujin.title.eng, jp=doujin.title.jp, pretty=doujin.title.pretty)
+                session.add(title)
+                
+                approxTitleId = session.query(HentaiTitle).order_by(HentaiTitle.id.desc()).first()
                 newBook = HentaiBook(id=doujin.id, 
                                     title_id=approxTitleId.id, 
                                     thumbnail=doujin.thumbnail, 
@@ -70,6 +71,7 @@ class NatsumeDivineObj(extensions.NatsumeExt):
                                     language=doujin.lang,
                                     num_page=doujin.num_pages)
                 session.add(newBook)
+
         except Exception as e:
             self.utils.printError("nh-importer", f"An Database Error Occured: {e}")
             self.utils.printInfo('nh-importer', "rolling back changes")

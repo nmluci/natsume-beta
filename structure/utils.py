@@ -77,8 +77,9 @@ class NatsumeUtils:
             return json.load(cfg)
 
     def printError(self, mod, err):
-        import traceback
-        traceback.print_exc()
+        if type(err) != str:
+            import traceback
+            traceback.print_exc()
         with self.lock: print(f"{self.RED}[{mod}] {err}{self.CLR}")
 
     def printInfo(self, mod, info):
