@@ -96,8 +96,8 @@ class NatsumeUtils:
                 skip = False
                 continue
 
-            if '-' in arg[i]:
-                argMap[arg[i].strip("-")] = arg[i+1]
+            if '--' in arg[i]:
+                argMap[arg[i].strip("--")] = arg[i+1]
                 skip = True
             else:
                 argMap[f"args_{len(argMap)+1}"] = arg[i]

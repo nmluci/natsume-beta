@@ -165,7 +165,7 @@ class Hentai:
         try: 
             return Book(self.__getUrl(f"gallery/{id}"))
         except KeyError:
-            raise ValueError("NukeCode Nuked!")
+            raise ValueError(f"NukeCode {id} Nuked!")
 
     def random(self):
         nukeid = self.session.head(
