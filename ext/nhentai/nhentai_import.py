@@ -15,6 +15,7 @@ class NatsumeDivineObjImporter(extensions.NatsumeExt):
         self.alias = ["hentai-import", "nh-import"]
         self.isSystem = False
         self.hentai = Hentai()
+        self.added = 0
 
     # fallback in case manga not available anymore
     def importFromTachiyomiFallback(self, manga: BackupManga, ctr):
@@ -51,9 +52,13 @@ class NatsumeDivineObjImporter(extensions.NatsumeExt):
             session.rollback()
         else:
             session.commit()
+            session.close()
+            self.added += 1
+
     
     def importFromTachiyomi(self, bookshelf: List["BackupManga"]):
         try:
+            self.added = 0
             for ctr, book in enumerate(bookshelf):
                 session = self.session()
                 bookId = re.findall(r"\d+", book.url)[0]
@@ -97,6 +102,7 @@ class NatsumeDivineObjImporter(extensions.NatsumeExt):
 
                 session.commit()
                 session.close()
+                self.added += 1
 
         except Exception as e:
             self.utils.printError("hentai-import", f"an database error occured: {e}")
@@ -111,3 +117,5 @@ class NatsumeDivineObjImporter(extensions.NatsumeExt):
             self.importFromTachiyomi(self.base.cache["mangaBackup"]["data"]["doujin"])        
         except Exception as e:
             self.utils.printError("hentai-import", f"an error occured: {e}")
+        else:
+            self.utils.printInfo("hentai-import", f"Newly added hentai: {self.added}")

@@ -18,5 +18,5 @@ class NatsumeDivineObjSearch(extensions.NatsumeExt):
         self.isSystem = False
         self.hentai = Hentai()
         
-    def execute(self, args=None):
+    def execute(self, **args):
         return super().execute(args=args)
